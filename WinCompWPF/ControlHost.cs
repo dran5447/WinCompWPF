@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Interop;
-using Windows.UI;
-using Windows.UI.Composition.Desktop;
-using System.Numerics;
 using Windows.UI.Composition;
 
 using BarGraphUtility;
 
 namespace WinCompWPF
 {
+    /*
+     * Host for Composition content
+     */ 
     class ControlHost: HwndHost
     {
         IntPtr hwndHost;
@@ -90,50 +86,24 @@ namespace WinCompWPF
             target.Root = mainContainer;
         }
 
-        public void UpdateGraph()
+        public void UpdateGraph(Customer customer)
         {
-            BarGraph graph = new BarGraph(c, "test", "a", "b", 500, 500);
+            // Remove old bar graph if already exists
+            if(mainContainer.Children.Count > 0)
+            {
+                mainContainer.Children.RemoveAll();
+            }
+
+            var graphTitle = customer.FirstName + " Investment History";
+            var xAxisTitle = "Investment #"; 
+            var yAxisTitle = "Num Shares of Stock";
+
+            //TODO update how data is passed and retrieved to graph (need to be able to include value + label for each bar in dataset)
+            //TODO get graph size from parent container size?
+
+            BarGraph graph = new BarGraph(c, graphTitle, xAxisTitle, yAxisTitle, 500, 500, customer.Data);
 
             mainContainer.Children.InsertAtTop(graph.Root);
-
-   
-
-            //var visual = c.CreateSpriteVisual();
-            //visual.Brush = c.CreateColorBrush(Colors.Blue);
-            //visual.Size = new Vector2(200, 200);
-
-            //mainContainer.Children.InsertAtTop(visual);
-
-
-            //ShapeVisual shape = c.CreateShapeVisual();
-            //shape.Size = new Vector2(100, 100);
-
-            //var circleGeometry = c.CreateEllipseGeometry();
-            //circleGeometry.Radius = new Vector2(30, 30);
-
-            //var circleShape = c.CreateSpriteShape(circleGeometry);
-            //circleShape.Offset = new Vector2(50, 50);
-            //circleShape.FillBrush = c.CreateColorBrush(Colors.Red);
-            //shape.Shapes.Insert(0, circleShape);
-
-            //mainContainer.Children.InsertAtTop(shape);
-            
-
-
-            //var shapeContainer = c.CreateContainerShape();
-            //shapeContainer.CenterPoint = new Vector2(100f, 100f);
- 
-            //var rect = c.CreateRectangleGeometry();
-            //var spriteShape = c.CreateSpriteShape(rect);
-            //shapeContainer.Shapes.Add(spriteShape);
-
-            //var line = c.CreateLineGeometry();
-            //var spriteShape2 = c.CreateSpriteShape(line);
-            //spriteShape2 = c.CreateSpriteShape(line);
- 
-            //shapeContainer.Shapes.Add(spriteShape2);
-
-            //mainContainer.Children.InsertAtTop(shapeContainer);
         }
 
 

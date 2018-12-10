@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WinCompWPF
 {
+    /*
+     * Base customer object with a selection of data
+     */ 
     class Customer
     {
         private string id;
@@ -13,16 +12,22 @@ namespace WinCompWPF
         private string lastname;
         private DateTime customerSince;
         private bool newslettersubscriber;
+        private float[] data;
 
-        public Customer(string id, string firstname, string lastname, DateTime customerSince, bool newslettersubscriber)
+        public Customer(string id, string firstname, string lastname, DateTime customerSince, bool newslettersubscriber, float[] data)
         {
             this.firstname = firstname;
             this.lastname = lastname;
             this.id = id;
             this.customerSince = customerSince;
             this.newslettersubscriber = newslettersubscriber;
+            this.data = data;
         }
 
+        public float[] Data
+        {
+            get { return data; }
+        }
 
         public string ID
         {

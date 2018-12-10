@@ -12,11 +12,12 @@ namespace BarGraphUtility
 {
     class BarGraph
     {
-        private float[] data = new float[] { }; //TODO remove later
+        private float[] _graphData;
 
         private Compositor _compositor;
-        private float width, height;
+        private float _graphWidth, _graphHeight;
         private float _shapeGraphContainerHeight, _shapeGraphContainerWidth, _shapeGraphOffsetY, _shapeGraphOffsetX;
+        private float _barWidth, _barSpacing;
 
         #region public setters
         public string Title { get; set; }
@@ -34,14 +35,16 @@ namespace BarGraphUtility
 
         /*
          * Constructor for bar graph. 
+         * For now only does single bars, no grouping
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
         public BarGraph(Compositor compositor, string title, string xAxisLabel, string yAxisLabel, float width, float height,//required parameters
-            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical) //optional parameters
+            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical, //optional parameters
+            float[] data = new float[] {20, 40, 80, 10 } ) // TODO remove later 
         {
             _compositor = compositor;
-            this.width = width;
-            this.height = height;
+            this._graphWidth = width;
+            this._graphHeight = height;
 
             Title = title;
             XAxisLabel = xAxisLabel;
@@ -62,40 +65,13 @@ namespace BarGraphUtility
             var graphRoot = GenerateGraphStructure();
             Root = graphRoot;
 
-            //TODO if data has been provided, init bars and animations
-            AddBars(data);
-            //if (data.Length>0)
-            //{
-            //    AddBars(data);
-            //}
+            //If data has been provided init bars and animations, else leave graph empty
+            if (data.Length > 0)
+            {
+                AddBars(data);
+            }
         }
 
-        private void AddBars(float[] data)
-        {
-            //TODO Based on data set size, compute the X offset and size of each bar
-            var barSpacing = 10f;
-            var barWidth = 20f;
-
-            //TODO iterate through data. For each piece of data do the following:
-            var dataValue = 30;
-            var computedHeight = 50;
-
-            var bar1 = new BarGraphUtility.Bar(_compositor, computedHeight, barWidth, "something", dataValue);  //TODO replace with actual data
-
-            //TODO compute x offset appropriately
-            bar1.Root.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX + barSpacing * 1, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
-
-            Root.Children.InsertAtTop(bar1.Root);
-
-            bar1.AnimateIn();
-
-            var bar2 = new Bar(_compositor, computedHeight * 2, barWidth, "something", dataValue, _compositor.CreateColorBrush(Colors.Green));  //TODO replace with actual data
-            //TODO compute x offset appropriately
-            bar2.Root.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX + barSpacing * 2 + barWidth, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
-            Root.Children.InsertAtTop(bar2.Root);
-
-            bar2.AnimateIn();
-        }
 
         private ContainerVisual GenerateGraphStructure()
         {
@@ -103,10 +79,14 @@ namespace BarGraphUtility
             mainContainer.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX, _shapeGraphOffsetY, 0);
 
             //TODO use dwrite to render title & x/y labels
-            _shapeGraphOffsetY = height * 2 / 8;
-            _shapeGraphOffsetX = width * 2 / 8;
-            _shapeGraphContainerHeight = height - _shapeGraphOffsetY;
-            _shapeGraphContainerWidth = width - _shapeGraphOffsetX;
+
+            _shapeGraphOffsetY = _graphHeight * 2 / 8;
+            _shapeGraphOffsetX = _graphWidth * 2 / 8;
+            _shapeGraphContainerHeight = _graphHeight - _shapeGraphOffsetY;
+            _shapeGraphContainerWidth = _graphWidth - _shapeGraphOffsetX;
+
+            _barWidth = ComputeBarWidth();
+            _barSpacing = (0.5 * _barWidth); //TODO update later?
 
             // Create shape tree to hold 
             var shapeContainer = _compositor.CreateShapeVisual();
@@ -137,9 +117,67 @@ namespace BarGraphUtility
             return mainContainer;
         }
 
+        private void AddBars(float[] data)
+        {
+            //TODO Based on data set size, compute the X offset and size of each bar
+            //var barSpacing = 10f;
+            //var barWidth = 20f;
+
+            //TODO iterate through data. For each piece of data do the following:
+            var computedHeight = 50;  //TODO replace
+
+            var barBrushHelper = new BarGraphUtility.BarBrushHelper(_compositor);
+            for(int i=0; i<_graphData.Length(); i++)
+            {
+                var xOffset = _shapeGraphOffsetX + _barSpacing * (i+1);
+
+                var bar = new BarGraphUtility.Bar(_compositor, computedHeight, _barWidth, "something", data[i], barBrushHelper.GenerateRandomColorBrush());
+                bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
+                Root.Children.InsertAtTop(bar.Root);
+                bar.AnimateIn();
+            }
+
+            //var bar1 = new BarGraphUtility.Bar(_compositor, computedHeight, barWidth, "something", dataValue);  //TODO replace with actual data
+
+            ////TODO compute x offset appropriately
+            //bar1.Root.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX + barSpacing * 1, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
+
+            //Root.Children.InsertAtTop(bar1.Root);
+
+            //bar1.AnimateIn();
+
+            //var bar2 = new Bar(_compositor, computedHeight * 2, barWidth, "something", dataValue, _compositor.CreateColorBrush(Colors.Green));  //TODO replace with actual data
+            ////TODO compute x offset appropriately
+            //bar2.Root.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX + barSpacing * 2 + barWidth, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
+            //Root.Children.InsertAtTop(bar2.Root);
+
+            //bar2.AnimateIn();
+        }
 
 
+        private int GetMaxBarValue()
+        {
+            int max = _graphData[0];
+            for (int i = 0; i < _graphData.Length(); i++)
+            {
+                if (_graphData[i] > max)
+                {
+                    max = _graphData[i];
+                }
+            }
+            return max;
+        }
 
+        /*
+         * Return computed bar width for graph. Default spacing is 1/2 bar width. 
+         * TODO add option for min width or min spacing
+         */
+        private int ComputeBarWidth()
+        {
+            var spacingUnits = (_graphData.Length() + 1) / 2;
+
+            return (_shapeGraphContainerWidth / (_graphData.Length() + spacingUnits));
+        }
 
     }
 }

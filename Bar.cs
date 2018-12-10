@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Composition;
 
-namespace BarGraphUtility
+namespace BarGraphUtility 
 {
     class Bar
     {
@@ -60,7 +60,6 @@ namespace BarGraphUtility
         {
             ScalarKeyFrameAnimation heightAnimation = _compositor.CreateScalarKeyFrameAnimation();
             heightAnimation.Duration = new TimeSpan(0, 0, 4);
-            heightAnimation.IterationBehavior = AnimationIterationBehavior.Forever; //TODO remove
             heightAnimation.InsertKeyFrame(0.0f, 0f);
             heightAnimation.InsertKeyFrame(1.0f, Height);
             Root.StartAnimation("Size.X", heightAnimation);

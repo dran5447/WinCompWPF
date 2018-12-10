@@ -5,12 +5,6 @@ VisualStudioVersion = 15.0.28010.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinCompWPF", "WinCompWPF\WinCompWPF.csproj", "{CD865AD5-692D-4B3F-8F33-0739C7E7BA27}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BarGraphUtility", "BarGraphUtility", "{1EFD98FD-D2F0-4DFC-9466-7175EDDFEBA0}"
-	ProjectSection(SolutionItems) = preProject
-		Bar.cs = Bar.cs
-		BarGraph.cs = BarGraph.cs
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

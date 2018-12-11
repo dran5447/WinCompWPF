@@ -21,7 +21,9 @@ namespace BarGraphUtility
         private float _graphWidth, _graphHeight;
         private float _shapeGraphContainerHeight, _shapeGraphContainerWidth, _shapeGraphOffsetY, _shapeGraphOffsetX;
         private float _barWidth, _barSpacing;
-        private Hashtable barValueMap;   //TODO change to other structure. Random data can cause collisions
+
+        //int key = position#; Bar value = Bar
+        private Hashtable barValueMap;   
 
         private WindowRenderTarget _titleRenderTarget;
         private WindowRenderTarget _xAxisRenderTarget;
@@ -227,7 +229,7 @@ namespace BarGraphUtility
                 var bar = new BarGraphUtility.Bar(_compositor, height, _barWidth, "something", _graphData[i], brushes[i]);
                 bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
 
-                barValueMap.Add(data[i], bar);
+                barValueMap.Add(i, bar);
 
                 bars[i] = bar;
             }
@@ -240,7 +242,6 @@ namespace BarGraphUtility
             for (int i = 0; i < bars.Length; i++)
             {
                 BarRoot.Children.InsertAtTop(bars[i].Root);
-                bars[i].Animate(0, bars[i].Height);
             }
         }
 
@@ -266,17 +267,13 @@ namespace BarGraphUtility
                 for (int i=0; i< _graphData.Length; i++)
                 {
                     // Animate bar height
-                    var oldBar = (Bar)(barValueMap[_graphData[i]]);
+                    var oldBar = (Bar)(barValueMap[i]);
                     var newBarHeight = GetAdjustedBarHeight(maxValue, newData[i]);
-                    oldBar.Animate(oldBar.Height, newBarHeight);
 
                     // Update Bar
-                    oldBar.Height = newBarHeight;
+                    oldBar.Height = newBarHeight; //Trigger height animation
                     oldBar.Label = "something2"; //TODO update
                     oldBar.Value = newData[i];
-
-                    barValueMap.Remove(_graphData[i]);
-                    barValueMap.Add(newData[i], oldBar);
                 }
             }
             else

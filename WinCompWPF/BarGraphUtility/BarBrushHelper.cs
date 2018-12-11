@@ -57,9 +57,7 @@ namespace BarGraphUtility
             lgb.RotationAngleInDegrees = 45;
 
             var colorStop1 = _compositor.CreateColorGradientStop(0.0f, Colors.Red);
-
             var colorStop2 = _compositor.CreateColorGradientStop(0.5f, Colors.Orange);
-
             var colorStop3 = _compositor.CreateColorGradientStop(1.0f, Colors.Yellow);
 
             lgb.ColorStops.Add(colorStop1);

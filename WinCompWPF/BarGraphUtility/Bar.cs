@@ -1,25 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using Windows.UI;
 using Windows.UI.Composition;
 
-namespace BarGraphUtility 
+namespace BarGraphUtility
 {
     class Bar
     {
         private Compositor _compositor;
+        private float _height;
+        private CompositionRectangleGeometry rectGeometry;
 
         public CompositionBrush Brush { get; set; }
-        public float Height { get; set; }
+        public float Height {
+            get { return _height; }
+            set {
+                _height = value;
+                if (Root != null)
+                {
+                    Root.Size = new Vector2(value, Width);
+                }
+            }
+        }
         public float Width { get; set; }
         public float Value { get; set; }
         public string Label { get; set; }
 
         public ShapeVisual Root { get; private set; }
-
 
         public Bar(Compositor compositor, float height, float width, string label, float value, CompositionBrush brush = null)
         {
@@ -45,7 +52,7 @@ namespace BarGraphUtility
             shapeVisual.Size = new System.Numerics.Vector2(Height, Width); //reverse width and height since rect will be at a 90* angle
             shapeVisual.RotationAngleInDegrees = -90f;
 
-            var rectGeometry = _compositor.CreateRectangleGeometry();
+            rectGeometry = _compositor.CreateRectangleGeometry();
             rectGeometry.Size = new System.Numerics.Vector2(Height, Width);
 
             var barVisual = _compositor.CreateSpriteShape(rectGeometry);
@@ -54,19 +61,22 @@ namespace BarGraphUtility
             shapeVisual.Shapes.Add(barVisual);
 
             Root = shapeVisual;
+
+            // Add implict animation to bar
+            var implicitAnimations = _compositor.CreateImplicitAnimationCollection();
+            // Trigger animation when the size property changes. 
+            implicitAnimations["Size"] = CreateAnimation();
+            Root.ImplicitAnimations = implicitAnimations;
         }
 
-        public void Animate(float oldVal, float newVal)
+        Vector2KeyFrameAnimation CreateAnimation()
         {
-            ScalarKeyFrameAnimation heightAnimation = _compositor.CreateScalarKeyFrameAnimation();
-            heightAnimation.Duration = new TimeSpan(0, 0, 3);
-            heightAnimation.InsertKeyFrame(0.0f, oldVal);
-            heightAnimation.InsertKeyFrame(1.0f, newVal);
-            Root.StartAnimation("Size.X", heightAnimation);
-
-            //TODO optionally easing functions to add to the insertkeyframe overload
+            Vector2KeyFrameAnimation animation = _compositor.CreateVector2KeyFrameAnimation();
+            animation.InsertExpressionKeyFrame(0f, "this.StartingValue");
+            animation.InsertExpressionKeyFrame(1f, "this.FinalValue");
+            animation.Target = "Size";
+            animation.Duration = TimeSpan.FromSeconds(3);
+            return animation;
         }
-
-        //TODO changed events
     }
 }

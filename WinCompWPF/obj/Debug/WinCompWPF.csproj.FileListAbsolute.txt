@@ -60,3 +60,14 @@ C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\Win
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\WinCompWPF.csproj.CopyComplete
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\WinCompWPFWinForms.exe
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\WinCompWPFWinForms.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Direct2D1.dll
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.dll
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.DXGI.dll
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Direct2D1.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Direct2D1.xml
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.DXGI.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.DXGI.xml
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Mathematics.dll
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Mathematics.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Mathematics.xml

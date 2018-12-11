@@ -101,9 +101,17 @@ namespace WinCompWPF
             //TODO update how data is passed and retrieved to graph (need to be able to include value + label for each bar in dataset)
             //TODO get graph size from parent container size?
 
-            BarGraph graph = new BarGraph(c, graphTitle, xAxisTitle, yAxisTitle, 500, 500, customer.Data);
+            BarGraph graph = new BarGraph(c, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data);
 
             mainContainer.Children.InsertAtTop(graph.Root);
+
+
+            graph.DrawText(hwndHost, graphTitle, 20, hostWidth, hostHeight); //TODO fix
+        }
+
+        public void UpdateGraphSize(float width, float height)
+        {
+
         }
 
 

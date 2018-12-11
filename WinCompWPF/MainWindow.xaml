@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WinCompWPF"
         xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationFramework"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800"
+        Title="MainWindow" Height="800" Width="1200"
         Loaded="Window_Loaded">
     
     <DockPanel Background="White">
@@ -45,8 +45,8 @@
         <StackPanel x:Name="DetailsPane" Orientation="Vertical" DockPanel.Dock="Right" >
             <TextBlock FontSize="20">Investment History</TextBlock>
             <Border Name="ControlHostElement"
-                Width="400"
-                Height="400"
+                Width="600"
+                Height="500"
                 VerticalAlignment="Top"
                 BorderBrush="LightGray"
                 BorderThickness="3"/>

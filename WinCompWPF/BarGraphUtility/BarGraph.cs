@@ -1,7 +1,12 @@
 ﻿using Windows.UI;
 using Windows.UI.Composition;
 
-
+using SharpDX;
+using SharpDX.DirectWrite;
+using SharpDX.Direct2D1;
+using TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;
+using SharpDX.DXGI;
+using System;
 
 namespace BarGraphUtility
 {
@@ -64,13 +69,10 @@ namespace BarGraphUtility
             }
         }
 
-
         private ContainerVisual GenerateGraphStructure()
         {
             ContainerVisual mainContainer = _compositor.CreateContainerVisual();
             mainContainer.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX, _shapeGraphOffsetY, 0);
-
-            //TODO use dwrite to render title & x/y labels
 
             _shapeGraphOffsetY = _graphHeight * 2 / 8;
             _shapeGraphOffsetX = _graphWidth * 2 / 8;
@@ -80,6 +82,7 @@ namespace BarGraphUtility
             _barWidth = ComputeBarWidth();
             _barSpacing = (float)(0.5 * _barWidth);
 
+
             // Create shape tree to hold 
             var shapeContainer = _compositor.CreateShapeVisual();
             shapeContainer.Offset = new System.Numerics.Vector3(_shapeGraphOffsetX, _shapeGraphOffsetY, 0);
@@ -87,7 +90,7 @@ namespace BarGraphUtility
 
             var xAxisLine = _compositor.CreateLineGeometry();
             xAxisLine.Start = new System.Numerics.Vector2(0, _shapeGraphContainerHeight);
-            xAxisLine.End = new System.Numerics.Vector2(_shapeGraphContainerHeight, _shapeGraphContainerWidth);
+            xAxisLine.End = new System.Numerics.Vector2(_shapeGraphContainerWidth, _shapeGraphContainerHeight);
 
             var xAxisShape = _compositor.CreateSpriteShape(xAxisLine);
             xAxisShape.StrokeBrush = _compositor.CreateColorBrush(Colors.Black);
@@ -107,6 +110,55 @@ namespace BarGraphUtility
 
             // Return root node for graph
             return mainContainer;
+        }
+
+        public void DrawText(IntPtr hwnd, string text, int textSize, int rectWidth, int rectHeight)
+        {
+            //TODO abstract this 
+
+            var Factory2D = new SharpDX.Direct2D1.Factory();
+            var FactoryDWrite = new SharpDX.DirectWrite.Factory();
+            var TextFormat = new TextFormat(FactoryDWrite, "Segoe", textSize) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };
+
+            HwndRenderTargetProperties properties = new HwndRenderTargetProperties();
+            properties.Hwnd = hwnd;
+            properties.PixelSize = new SharpDX.Size2(rectWidth, rectHeight);
+            properties.PresentOptions = PresentOptions.None;
+
+            WindowRenderTarget RenderTarget2D = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
+
+            RenderTarget2D.AntialiasMode = AntialiasMode.PerPrimitive;
+            RenderTarget2D.TextAntialiasMode = TextAntialiasMode.Cleartype;
+
+            SharpDX.Mathematics.Interop.RawColor4 black = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 255);
+            SharpDX.Mathematics.Interop.RawColor4 white = new SharpDX.Mathematics.Interop.RawColor4(255, 255, 255, 255);
+
+            var SceneColorBrush = new SolidColorBrush(RenderTarget2D, black);
+
+            RectangleF ClientRectangle = new RectangleF(0, 0, rectWidth, rectHeight);
+
+            SceneColorBrush.Color = black;
+           
+            RenderTarget2D.BeginDraw();
+
+            RenderTarget2D.Clear(white);
+            RenderTarget2D.DrawText(text, TextFormat, ClientRectangle, SceneColorBrush);
+            RenderTarget2D.EndDraw();
+        }
+
+        public void DrawXAxisLabel()
+        {
+            //TODO
+        }
+
+        public void DrawYAxisLabel()
+        {
+            //TODO
+        }
+
+        public void DrawTitle()
+        {
+            //TODO
         }
 
         private void AddBars()

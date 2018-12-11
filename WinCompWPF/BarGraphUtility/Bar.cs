@@ -56,12 +56,12 @@ namespace BarGraphUtility
             Root = shapeVisual;
         }
 
-        public void AnimateIn()
+        public void Animate(float oldVal, float newVal)
         {
             ScalarKeyFrameAnimation heightAnimation = _compositor.CreateScalarKeyFrameAnimation();
-            heightAnimation.Duration = new TimeSpan(0, 0, 4);
-            heightAnimation.InsertKeyFrame(0.0f, 0f);
-            heightAnimation.InsertKeyFrame(1.0f, Height);
+            heightAnimation.Duration = new TimeSpan(0, 0, 3);
+            heightAnimation.InsertKeyFrame(0.0f, oldVal);
+            heightAnimation.InsertKeyFrame(1.0f, newVal);
             Root.StartAnimation("Size.X", heightAnimation);
 
             //TODO optionally easing functions to add to the insertkeyframe overload

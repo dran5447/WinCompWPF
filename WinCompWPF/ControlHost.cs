@@ -17,6 +17,7 @@ namespace WinCompWPF
         object dispatcherQueue;
         private ContainerVisual mainContainer;
         private Compositor c;
+        private BarGraph currentGraph;
 
         internal const int
           WS_CHILD = 0x40000000,
@@ -88,25 +89,27 @@ namespace WinCompWPF
 
         public void UpdateGraph(Customer customer)
         {
-            // Remove old bar graph if already exists
-            if(mainContainer.Children.Count > 0)
-            {
-                mainContainer.Children.RemoveAll();
-            }
-
             var graphTitle = customer.FirstName + " Investment History";
+            //TODO fix labels
             var xAxisTitle = "Investment #"; 
             var yAxisTitle = "Num Shares of Stock";
 
             //TODO update how data is passed and retrieved to graph (need to be able to include value + label for each bar in dataset)
             //TODO get graph size from parent container size?
 
-            BarGraph graph = new BarGraph(c, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data);
 
-            mainContainer.Children.InsertAtTop(graph.Root);
+            // If graph already exists, update values
+            if (mainContainer.Children.Count > 0 && currentGraph!=null)
+            {
+                currentGraph.UpdateGraphData(graphTitle, xAxisTitle, yAxisTitle, customer.Data);
+            }
+            else
+            {
+                BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data);
 
-
-            graph.DrawText(hwndHost, graphTitle, 20, hostWidth, hostHeight); //TODO fix
+                currentGraph = graph;
+                mainContainer.Children.InsertAtTop(graph.GraphRoot);                
+            }
         }
 
         public void UpdateGraphSize(float width, float height)

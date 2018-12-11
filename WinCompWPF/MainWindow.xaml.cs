@@ -61,7 +61,7 @@ namespace WinCompWPF
          */ 
         private float[] GenerateRandomData()
         {
-            var numDataPoints = random.Next(2, 8);
+            var numDataPoints = 6;//random.Next(2, 8);
             float[] data = new float[numDataPoints];
 
             for (int j = 0; j < numDataPoints; j++)

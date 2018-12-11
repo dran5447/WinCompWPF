@@ -98,6 +98,7 @@
     <Compile Include="BarGraphUtility\Bar.cs" />
     <Compile Include="BarGraphUtility\BarBrushHelper.cs" />
     <Compile Include="BarGraphUtility\BarGraph.cs" />
+    <Compile Include="BarGraphUtility\BarSet.cs" />
     <Compile Include="ControlHost.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="MainWindow.xaml.cs">

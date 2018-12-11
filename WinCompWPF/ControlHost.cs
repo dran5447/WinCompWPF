@@ -98,14 +98,14 @@ namespace WinCompWPF
             //TODO get graph size from parent container size?
 
 
-            // If graph already exists, update values
+            // If graph already exists update values. Else create new graph.
             if (mainContainer.Children.Count > 0 && currentGraph!=null)
             {
                 currentGraph.UpdateGraphData(graphTitle, xAxisTitle, yAxisTitle, customer.Data);
             }
             else
             {
-                BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data);
+                BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data, true, BarGraph.GraphOrientation.Vertical, BarGraph.GraphBarColorOptions.PerBarLinearGradient);
 
                 currentGraph = graph;
                 mainContainer.Children.InsertAtTop(graph.GraphRoot);                

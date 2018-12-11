@@ -32,14 +32,26 @@ namespace BarGraphUtility
         public string XAxisLabel { get; set; }
         public string YAxisLabel { get; set; }
         public GraphOrientation Orientation { get; set; }
+        public GraphBarColorOptions GraphColor { get; set; }
         public ContainerVisual BarRoot { get; }
         public ContainerVisual GraphRoot { get; }
         #endregion
 
+        //TODO make meaningful
         public enum GraphOrientation
         {
             Vertical = 0,
             Horizontal = 1
+        }
+
+        //TODO make meaningful
+        public enum GraphBarColorOptions
+        {
+            SingleRandom = 0,
+            Random = 1,
+            PerBarLinearGradient = 3,
+            SharedLinearGradient = 4,
+            TintedBlur = 5
         }
 
         /*
@@ -48,7 +60,7 @@ namespace BarGraphUtility
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
         public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, float[] data,//required parameters
-            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical) //optional parameters
+            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical, GraphBarColorOptions colorOptions = GraphBarColorOptions.SingleRandom) //optional parameters
         {
             _compositor = compositor;
             _hwnd = hwnd;
@@ -61,6 +73,7 @@ namespace BarGraphUtility
             YAxisLabel = yAxisLabel;
 
             Orientation = orientation;
+            GraphColor = colorOptions;
 
             // Configure options for text
             var Factory2D = new SharpDX.Direct2D1.Factory();
@@ -178,16 +191,40 @@ namespace BarGraphUtility
             //Clear hashmap 
             barValueMap.Clear();
 
-            var maxValue = GetMaxBarValue(data);
-            var barBrushHelper = new BarGraphUtility.BarBrushHelper(_compositor);
 
+            // TODO break out into separate UpdateColors method?
+            var barBrushHelper = new BarGraphUtility.BarBrushHelper(_compositor);
+            CompositionBrush[] brushes = new CompositionBrush[data.Length];
+            switch (GraphColor)
+            {
+                case GraphBarColorOptions.SingleRandom:
+                    brushes = barBrushHelper.GenerateSingleRandomColorBrush(data.Length);
+                    break;
+                case GraphBarColorOptions.Random:
+                    brushes = barBrushHelper.GenerateRandomColorBrushes(data.Length);
+                    break;
+                case GraphBarColorOptions.PerBarLinearGradient:
+                    brushes = barBrushHelper.GeneratePerBarLinearGradient(data.Length);
+                    break;
+                case GraphBarColorOptions.SharedLinearGradient:
+                    brushes = barBrushHelper.GenerateSharedLinearGradient(data.Length);
+                    break;
+                case GraphBarColorOptions.TintedBlur:
+                    brushes = barBrushHelper.GenerateTintedBlur(data.Length);
+                    break;
+                default:
+                    brushes = barBrushHelper.GenerateSingleRandomColorBrush(data.Length);
+                    break;
+            }
+           
+            var maxValue = GetMaxBarValue(data);
             var bars = new Bar[data.Length];
             for(int i=0; i<data.Length; i++)
             {
                 var xOffset = _shapeGraphOffsetX + _barSpacing + (_barWidth + _barSpacing) * i;
                 var height = GetAdjustedBarHeight(maxValue, _graphData[i]);
 
-                var bar = new BarGraphUtility.Bar(_compositor, height, _barWidth, "something", _graphData[i]);
+                var bar = new BarGraphUtility.Bar(_compositor, height, _barWidth, "something", _graphData[i], brushes[i]);
                 bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
 
                 barValueMap.Add(data[i], bar);

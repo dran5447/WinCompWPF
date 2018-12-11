@@ -90,6 +90,7 @@ namespace BarGraphUtility
 
             //If data has been provided init bars and animations, else leave graph empty
             //TODO add ability to add data later on (move out of constructor)
+            //TODO add ability to either create individual bars or barsets for the graph
             if (_graphData.Length > 0)
             {
                 barValueMap = new Hashtable();

@@ -9,6 +9,7 @@ using SharpDX.DXGI;
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace BarGraphUtility
 {
@@ -23,6 +24,9 @@ namespace BarGraphUtility
         private float _shapeGraphContainerHeight, _shapeGraphContainerWidth, _shapeGraphOffsetY, _shapeGraphOffsetX;
         private float _barWidth, _barSpacing;
 
+        private GraphBarStyle _graphBarStyle;
+        private List<Windows.UI.Color> _graphBarColors;
+
         //int key = position#; Bar value = Bar
         private Hashtable barValueMap;   
 
@@ -34,7 +38,6 @@ namespace BarGraphUtility
         public string XAxisLabel { get; set; }
         public string YAxisLabel { get; set; }
         public GraphOrientation Orientation { get; set; }
-        public GraphBarColorOptions GraphColor { get; set; }
         public ContainerVisual BarRoot { get; }
         public ContainerVisual GraphRoot { get; }
         #endregion
@@ -47,13 +50,14 @@ namespace BarGraphUtility
         }
 
         //TODO make meaningful
-        public enum GraphBarColorOptions
+        public enum GraphBarStyle
         {
-            SingleRandom = 0,
+            Single = 0,
             Random = 1,
             PerBarLinearGradient = 3,
-            SharedLinearGradient = 4,
-            TintedBlur = 5
+            AmbientAnimatingPerBarLinearGradient = 4,
+            SharedLinearGradient = 5,
+            TintedBlur = 6
         }
 
         /*
@@ -62,7 +66,8 @@ namespace BarGraphUtility
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
         public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, float[] data,//required parameters
-            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical, GraphBarColorOptions colorOptions = GraphBarColorOptions.SingleRandom) //optional parameters
+            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical, GraphBarStyle graphBarStyle = GraphBarStyle.Single, 
+            List<Windows.UI.Color> barColors = null) //optional parameters
         {
             _compositor = compositor;
             _hwnd = hwnd;
@@ -75,7 +80,17 @@ namespace BarGraphUtility
             YAxisLabel = yAxisLabel;
 
             Orientation = orientation;
-            GraphColor = colorOptions;
+            _graphBarStyle = graphBarStyle;
+
+            if(barColors != null)
+            {
+                _graphBarColors = barColors;
+            }
+            else
+            {
+                _graphBarColors = new List<Windows.UI.Color>() { Colors.Blue };
+            }
+           
 
             // Configure options for text
             var Factory2D = new SharpDX.Direct2D1.Factory();
@@ -225,25 +240,28 @@ namespace BarGraphUtility
             // TODO break out into separate UpdateColors method?
             var barBrushHelper = new BarGraphUtility.BarBrushHelper(_compositor);
             CompositionBrush[] brushes = new CompositionBrush[data.Length];
-            switch (GraphColor)
+            switch (_graphBarStyle)
             {
-                case GraphBarColorOptions.SingleRandom:
-                    brushes = barBrushHelper.GenerateSingleRandomColorBrush(data.Length);
+                case GraphBarStyle.Single:
+                    brushes = barBrushHelper.GenerateSingleColorBrush(data.Length, _graphBarColors[0]);
                     break;
-                case GraphBarColorOptions.Random:
+                case GraphBarStyle.Random:
                     brushes = barBrushHelper.GenerateRandomColorBrushes(data.Length);
                     break;
-                case GraphBarColorOptions.PerBarLinearGradient:
-                    brushes = barBrushHelper.GeneratePerBarLinearGradient(data.Length);
+                case GraphBarStyle.PerBarLinearGradient:
+                    brushes = barBrushHelper.GeneratePerBarLinearGradient(data.Length, _graphBarColors);
                     break;
-                case GraphBarColorOptions.SharedLinearGradient:
+                case GraphBarStyle.AmbientAnimatingPerBarLinearGradient:
+                    brushes = barBrushHelper.GenerateAmbientAnimatingPerBarLinearGradient(data.Length, _graphBarColors);
+                    break;
+                case GraphBarStyle.SharedLinearGradient:
                     brushes = barBrushHelper.GenerateSharedLinearGradient(data.Length);
                     break;
-                case GraphBarColorOptions.TintedBlur:
+                case GraphBarStyle.TintedBlur:
                     brushes = barBrushHelper.GenerateTintedBlur(data.Length);
                     break;
                 default:
-                    brushes = barBrushHelper.GenerateSingleRandomColorBrush(data.Length);
+                    brushes = barBrushHelper.GenerateSingleColorBrush(data.Length, _graphBarColors[0]);
                     break;
             }
            

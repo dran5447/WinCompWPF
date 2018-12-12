@@ -4,6 +4,8 @@ using System.Windows.Interop;
 using Windows.UI.Composition;
 
 using BarGraphUtility;
+using System.Collections.Generic;
+using Windows.UI;
 
 namespace WinCompWPF
 {
@@ -105,7 +107,11 @@ namespace WinCompWPF
             }
             else
             {
-                BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, hostWidth, hostHeight, customer.Data, true, BarGraph.GraphOrientation.Vertical, BarGraph.GraphBarColorOptions.PerBarLinearGradient);
+                BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, 
+                    hostWidth, hostHeight, customer.Data, 
+                    true, BarGraph.GraphOrientation.Vertical, 
+                    BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
+                    new List<Color> {Colors.Black, Colors.DarkRed, Colors.DarkOrange, Colors.Yellow} );
 
                 currentGraph = graph;
                 mainContainer.Children.InsertAtTop(graph.GraphRoot);                

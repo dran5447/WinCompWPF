@@ -92,7 +92,7 @@ namespace WinCompWPF
             var graphTitle = customer.FirstName + " Investment History";
             //TODO fix labels
             var xAxisTitle = "Investment #"; 
-            var yAxisTitle = "Num Shares of Stock";
+            var yAxisTitle = "# Shares of Stock";
 
             //TODO update how data is passed and retrieved to graph (need to be able to include value + label for each bar in dataset)
             //TODO get graph size from parent container size?

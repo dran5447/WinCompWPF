@@ -8,7 +8,7 @@ namespace WinCompWPFWinForms.BarGraphUtility
 {
     class BarSet
     {
-
+        //TODO add option for stacked vs side by side 
 
     }
 }

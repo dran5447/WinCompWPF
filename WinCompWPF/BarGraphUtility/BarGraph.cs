@@ -27,7 +27,6 @@ namespace BarGraphUtility
         private Hashtable barValueMap;   
 
         private WindowRenderTarget _titleRenderTarget;
-        private WindowRenderTarget _xAxisRenderTarget;
         private WindowRenderTarget _yAxisRenderTarget;
 
         #region public setters
@@ -87,7 +86,6 @@ namespace BarGraphUtility
             properties.PresentOptions = PresentOptions.None;
 
             _titleRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
-            _xAxisRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
             _yAxisRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
 
 
@@ -155,20 +153,23 @@ namespace BarGraphUtility
             mainContainer.Children.InsertAtTop(shapeContainer);
 
             // Draw text
-            DrawText(_titleRenderTarget, Title, 20, 0);
-   //         DrawText(_xAxisRenderTarget, XAxisLabel, 20, 270);  //TODO add back in later
-   //         DrawText(_yAxisRenderTarget, YAxisLabel, 20, 0);
+            var textRectHeight = _shapeGraphOffsetY;
+            var textRectWidth = _shapeGraphContainerWidth;
+
+            DrawText(_titleRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
 
             // Return root node for graph
             return mainContainer;
         }
 
-        public void DrawText(WindowRenderTarget renderTarget, string text, int textSize, int rotationInDegrees)
+        public void DrawText(WindowRenderTarget renderTarget, string titleText, string xAxisText, string yAxisText, int baseTextSize)
         {
-            //TODO add rotation bit
-            
             var FactoryDWrite = new SharpDX.DirectWrite.Factory();
-            var TextFormat = new TextFormat(FactoryDWrite, "Segoe", textSize) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };
+
+            var TextFormatTitle = new TextFormat(FactoryDWrite, "Segoe", baseTextSize*5/4) {   TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };
+            var TextFormatHorizontal = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Far };
+            var TextFormatVertical = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { ReadingDirection = ReadingDirection.TopToBottom, FlowDirection=FlowDirection.LeftToRight,
+                TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Near };
 
             renderTarget.AntialiasMode = AntialiasMode.PerPrimitive;
             renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
@@ -178,15 +179,41 @@ namespace BarGraphUtility
 
             var SceneColorBrush = new SolidColorBrush(renderTarget, black);
 
-            RectangleF ClientRectangle = new RectangleF(0, 0, _graphWidth, _graphHeight);
+            var textRectWidth = 500;
+            var textRectHeight = 50;
+
+            RectangleF ClientRectangleTitle = new RectangleF(0, 0, textRectWidth, textRectHeight);
+            RectangleF ClientRectangleXAxis = new RectangleF(0, _shapeGraphContainerHeight- textRectHeight, textRectWidth, textRectHeight);
+            RectangleF ClientRectangleYAxis = new RectangleF(_shapeGraphOffsetX, _shapeGraphContainerHeight/2 + textRectWidth/4, textRectHeight, textRectWidth);
 
             SceneColorBrush.Color = black;
+
+            //Draw title and x axis text
 
             renderTarget.BeginDraw();
 
             renderTarget.Clear(white);
-            renderTarget.DrawText(text, TextFormat, ClientRectangle, SceneColorBrush);
+            renderTarget.DrawText(titleText, TextFormatTitle, ClientRectangleTitle, SceneColorBrush);
+            renderTarget.DrawText(xAxisText, TextFormatHorizontal, ClientRectangleXAxis, SceneColorBrush);
+
             renderTarget.EndDraw();
+
+            // Rotate render target to draw y axis text
+            renderTarget.Transform = Matrix3x2.Rotation(-3.141f, new Vector2(100, _shapeGraphContainerHeight));
+
+            renderTarget.BeginDraw();
+
+            renderTarget.DrawText(yAxisText, TextFormatVertical, ClientRectangleYAxis, SceneColorBrush);
+
+            renderTarget.EndDraw();
+
+            // Rotate the RenderTarget back
+            renderTarget.Transform = Matrix3x2.Identity;
+
+            //TODO dispose
+            //textFormat.Dispose();
+            //cachedTextLayout.Dispose();
+            //tmpBrush.Dispose();
         }
 
         private Bar[] CreateBars(float[] data)
@@ -255,10 +282,8 @@ namespace BarGraphUtility
             XAxisLabel = xAxisTitle;
             YAxisLabel = yAxisTitle;
 
-
             // Update text
-            DrawText(_titleRenderTarget, Title, 20, 0);
-            //TODO update other axes
+            DrawText(_titleRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
 
             // Generate bars 
             // If the same number of data points, update bars with new data. Else wipe and create new.

@@ -10,6 +10,8 @@ namespace BarGraphUtility
         private Compositor _compositor;
         private float _height;
         private CompositionRectangleGeometry rectGeometry;
+        private ShapeVisual shapeVisual;
+        private CompositionSpriteShape barVisual;
 
         public CompositionBrush Brush { get; set; }
         public float Height {
@@ -18,7 +20,7 @@ namespace BarGraphUtility
                 _height = value;
                 if (Root != null)
                 {
-                    Root.Size = new Vector2(value, Width);
+                    rectGeometry.Size = new Vector2(value, Width);
                 }
             }
         }
@@ -28,7 +30,7 @@ namespace BarGraphUtility
 
         public ShapeVisual Root { get; private set; }
 
-        public Bar(Compositor compositor, float height, float width, string label, float value, CompositionBrush brush = null)
+        public Bar(Compositor compositor, float maxBarHeight, float height, float width, string label, float value, CompositionBrush brush = null)
         {
             _compositor = compositor;
 
@@ -43,19 +45,19 @@ namespace BarGraphUtility
             }
             Brush = brush;
 
-            CreateBar();
+            CreateBar(maxBarHeight);
         }
 
-        public void CreateBar()
+        public void CreateBar(float maxHeight)
         {
-            var shapeVisual = _compositor.CreateShapeVisual();
-            shapeVisual.Size = new System.Numerics.Vector2(Height, Width); //reverse width and height since rect will be at a 90* angle
+            shapeVisual = _compositor.CreateShapeVisual();
+            shapeVisual.Size = new System.Numerics.Vector2(maxHeight, maxHeight);
             shapeVisual.RotationAngleInDegrees = -90f;
 
             rectGeometry = _compositor.CreateRectangleGeometry();
-            rectGeometry.Size = new System.Numerics.Vector2(Height, Width);
+            rectGeometry.Size = new System.Numerics.Vector2(Height, Width); //reverse width and height since rect will be at a 90* angle
 
-            var barVisual = _compositor.CreateSpriteShape(rectGeometry);
+            barVisual = _compositor.CreateSpriteShape(rectGeometry);
             barVisual.FillBrush = Brush;
 
             shapeVisual.Shapes.Add(barVisual);
@@ -66,7 +68,7 @@ namespace BarGraphUtility
             var implicitAnimations = _compositor.CreateImplicitAnimationCollection();
             // Trigger animation when the size property changes. 
             implicitAnimations["Size"] = CreateAnimation();
-            Root.ImplicitAnimations = implicitAnimations;
+            rectGeometry.ImplicitAnimations = implicitAnimations;
         }
 
         Vector2KeyFrameAnimation CreateAnimation()
@@ -75,7 +77,7 @@ namespace BarGraphUtility
             animation.InsertExpressionKeyFrame(0f, "this.StartingValue");
             animation.InsertExpressionKeyFrame(1f, "this.FinalValue");
             animation.Target = "Size";
-            animation.Duration = TimeSpan.FromSeconds(3);
+            animation.Duration = TimeSpan.FromSeconds(1);
             return animation;
         }
     }

@@ -8,6 +8,7 @@ using TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;
 using SharpDX.DXGI;
 using System;
 using System.Collections;
+using System.Diagnostics;
 
 namespace BarGraphUtility
 {
@@ -226,8 +227,8 @@ namespace BarGraphUtility
                 var xOffset = _shapeGraphOffsetX + _barSpacing + (_barWidth + _barSpacing) * i;
                 var height = GetAdjustedBarHeight(maxValue, _graphData[i]);
 
-                var bar = new BarGraphUtility.Bar(_compositor, height, _barWidth, "something", _graphData[i], brushes[i]);
-                bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY, 0);
+                var bar = new BarGraphUtility.Bar(_compositor, _shapeGraphContainerHeight, height, _barWidth, "something", _graphData[i], brushes[i]);
+                bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY , 0);
 
                 barValueMap.Add(i, bar);
 

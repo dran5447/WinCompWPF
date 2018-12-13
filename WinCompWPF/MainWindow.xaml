@@ -33,10 +33,17 @@
         </Grid>
 
         <Grid Margin="10,0">
-            <DataGrid x:Name="CustomerGrid" VerticalScrollBarVisibility="Auto" IsReadOnly="True" ItemsSource="{Binding Customers}" CanUserSortColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" AutoGenerateColumns="True">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" FontWeight="DemiBold" FontStyle="Italic" FontFamily="Segoe" FontSize="15" Foreground="SteelBlue" Margin="0,0" >Select a row to show data graph on the right.</TextBlock>
+            <TextBlock Grid.Row="1" FontStyle="Italic" FontFamily="Segoe" FontSize="13" Foreground="SteelBlue" Margin="0,0,0,10" >Select another to see the graph animate from one data set to the next.</TextBlock>
+            <DataGrid x:Name="CustomerGrid" Grid.Row="2" SelectionChanged="CustomerGrid_SelectionChanged" VerticalScrollBarVisibility="Auto" IsReadOnly="False" ItemsSource="{Binding Customers}" CanUserSortColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" AutoGenerateColumns="True">
                 <DataGrid.ItemContainerStyle>
                     <Style TargetType="DataGridRow">
-                        <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
                     </Style>
                 </DataGrid.ItemContainerStyle>
             </DataGrid>

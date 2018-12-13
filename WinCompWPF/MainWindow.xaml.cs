@@ -49,16 +49,16 @@ namespace WinCompWPF
         }
 
         /*
-         * Send customer info to the control on row double click
+         * Send customer info to the control on row select
          */
-        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void CustomerGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             listControl.UpdateGraph((Customer)CustomerGrid.SelectedItem);
         }
 
         /*
          * Generate random customer data
-         */ 
+         */
         private float[] GenerateRandomData()
         {
             var numDataPoints = 6;//random.Next(2, 8);
@@ -81,5 +81,6 @@ namespace WinCompWPF
             int range = (DateTime.Today - start).Days;
             return start.AddDays(random.Next(range));
         }
+
     }
 }

@@ -111,7 +111,7 @@ namespace WinCompWPF
                     hostWidth, hostHeight, customer.Data, 
                     true, BarGraph.GraphOrientation.Vertical, 
                     BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
-                    new List<Color> {Colors.Black, Colors.DarkRed, Colors.DarkOrange, Colors.Yellow} );
+                    new List<Color> {Colors.DarkBlue, Colors.Purple, Colors.Green, Colors.LightSeaGreen} );
 
                 currentGraph = graph;
                 mainContainer.Children.InsertAtTop(graph.GraphRoot);                

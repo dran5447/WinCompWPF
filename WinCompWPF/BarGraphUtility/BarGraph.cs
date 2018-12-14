@@ -27,10 +27,18 @@ namespace BarGraphUtility
         private List<Windows.UI.Color> _graphBarColors;
 
         //int key = position#; Bar value = Bar
-        private Hashtable barValueMap;   
+        private Hashtable _barValueMap;   
 
-        private WindowRenderTarget _titleRenderTarget;
-        private WindowRenderTarget _yAxisRenderTarget;
+        private WindowRenderTarget _textRenderTarget;
+        private SolidColorBrush _textSceneColorBrush;
+        private TextFormat _textFormatTitle;
+        private TextFormat _textFormatHorizontal;
+        private TextFormat _textFormatVertical;
+
+        private static int _textRectWidth = 500;
+        private static int _textRectHeight = 50;
+        private static SharpDX.Mathematics.Interop.RawColor4 black = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 255);
+        private static SharpDX.Mathematics.Interop.RawColor4 white = new SharpDX.Mathematics.Interop.RawColor4(255, 255, 255, 255);
 
         #region public setters
         public string Title { get; set; }
@@ -86,8 +94,7 @@ namespace BarGraphUtility
             properties.PixelSize = new SharpDX.Size2((int)_graphWidth, (int)_graphHeight);
             properties.PresentOptions = PresentOptions.None;
 
-            _titleRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
-            _yAxisRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
+            _textRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
 
             // Generate graph structure
             var graphRoot = GenerateGraphStructure();
@@ -99,7 +106,7 @@ namespace BarGraphUtility
             //If data has been provided init bars and animations, else leave graph empty
             if (_graphData.Length > 0)
             {
-                barValueMap = new Hashtable();
+                _barValueMap = new Hashtable();
                 var bars = CreateBars(_graphData);
                 AddBarsToTree(bars);
             }
@@ -145,10 +152,7 @@ namespace BarGraphUtility
             mainContainer.Children.InsertAtTop(shapeContainer);
 
             // Draw text
-            var textRectHeight = _shapeGraphOffsetY;
-            var textRectWidth = _shapeGraphContainerWidth;
-
-            DrawText(_titleRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
+            DrawText(_textRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
 
             // Return root node for graph
             return mainContainer;
@@ -158,35 +162,29 @@ namespace BarGraphUtility
         {
             var FactoryDWrite = new SharpDX.DirectWrite.Factory();
 
-            var TextFormatTitle = new TextFormat(FactoryDWrite, "Segoe", baseTextSize*5/4) {   TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };
-            var TextFormatHorizontal = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Far };
-            var TextFormatVertical = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { ReadingDirection = ReadingDirection.TopToBottom, FlowDirection=FlowDirection.LeftToRight,
+            _textFormatTitle = new TextFormat(FactoryDWrite, "Segoe", baseTextSize*5/4) {   TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Center };
+            _textFormatHorizontal = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Far };
+            _textFormatVertical = new TextFormat(FactoryDWrite, "Segoe", baseTextSize) { ReadingDirection = ReadingDirection.TopToBottom, FlowDirection=FlowDirection.LeftToRight,
                 TextAlignment = TextAlignment.Center, ParagraphAlignment = ParagraphAlignment.Near };
 
             renderTarget.AntialiasMode = AntialiasMode.PerPrimitive;
             renderTarget.TextAntialiasMode = TextAntialiasMode.Cleartype;
 
-            SharpDX.Mathematics.Interop.RawColor4 black = new SharpDX.Mathematics.Interop.RawColor4(0, 0, 0, 255);
-            SharpDX.Mathematics.Interop.RawColor4 white = new SharpDX.Mathematics.Interop.RawColor4(255, 255, 255, 255);
+            _textSceneColorBrush = new SolidColorBrush(renderTarget, black);
 
-            var SceneColorBrush = new SolidColorBrush(renderTarget, black);
+            RectangleF ClientRectangleTitle = new RectangleF(0, 0, _textRectWidth, _textRectHeight);
+            RectangleF ClientRectangleXAxis = new RectangleF(0, _shapeGraphContainerHeight- _textRectHeight, _textRectWidth, _textRectHeight);
+            RectangleF ClientRectangleYAxis = new RectangleF(_shapeGraphOffsetX, _shapeGraphContainerHeight/2 + _textRectWidth/4, _textRectHeight, _textRectWidth);
 
-            var textRectWidth = 500;
-            var textRectHeight = 50;
-
-            RectangleF ClientRectangleTitle = new RectangleF(0, 0, textRectWidth, textRectHeight);
-            RectangleF ClientRectangleXAxis = new RectangleF(0, _shapeGraphContainerHeight- textRectHeight, textRectWidth, textRectHeight);
-            RectangleF ClientRectangleYAxis = new RectangleF(_shapeGraphOffsetX, _shapeGraphContainerHeight/2 + textRectWidth/4, textRectHeight, textRectWidth);
-
-            SceneColorBrush.Color = black;
+            _textSceneColorBrush.Color = black;
 
             //Draw title and x axis text
 
             renderTarget.BeginDraw();
 
             renderTarget.Clear(white);
-            renderTarget.DrawText(titleText, TextFormatTitle, ClientRectangleTitle, SceneColorBrush);
-            renderTarget.DrawText(xAxisText, TextFormatHorizontal, ClientRectangleXAxis, SceneColorBrush);
+            renderTarget.DrawText(titleText, _textFormatTitle, ClientRectangleTitle, _textSceneColorBrush);
+            renderTarget.DrawText(xAxisText, _textFormatHorizontal, ClientRectangleXAxis, _textSceneColorBrush);
 
             renderTarget.EndDraw();
 
@@ -195,7 +193,7 @@ namespace BarGraphUtility
 
             renderTarget.BeginDraw();
 
-            renderTarget.DrawText(yAxisText, TextFormatVertical, ClientRectangleYAxis, SceneColorBrush);
+            renderTarget.DrawText(yAxisText, _textFormatVertical, ClientRectangleYAxis, _textSceneColorBrush);
 
             renderTarget.EndDraw();
 
@@ -203,19 +201,21 @@ namespace BarGraphUtility
             renderTarget.Transform = Matrix3x2.Identity;
         }
 
+        /*
+         * Dispose of resources
+         */ 
         public void Dispose()
         {
-            //TODO dispose of text resources
-
-            //textFormat.Dispose();
-            //cachedTextLayout.Dispose();
-            //tmpBrush.Dispose();
+            _textSceneColorBrush.Dispose();
+            _textFormatTitle.Dispose();
+            _textFormatHorizontal.Dispose();
+            _textFormatVertical.Dispose();
         }
 
         private Bar[] CreateBars(float[] data)
         {
             //Clear hashmap 
-            barValueMap.Clear();
+            _barValueMap.Clear();
 
 
             // TODO break out into separate UpdateColors method?
@@ -250,7 +250,7 @@ namespace BarGraphUtility
                 var bar = new BarGraphUtility.Bar(_compositor, _shapeGraphContainerHeight, height, _barWidth, "something", _graphData[i], brushes[i]);
                 bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight + _shapeGraphOffsetY , 0);
 
-                barValueMap.Add(i, bar);
+                _barValueMap.Add(i, bar);
 
                 bars[i] = bar;
             }
@@ -275,7 +275,7 @@ namespace BarGraphUtility
             YAxisLabel = yAxisTitle;
 
             // Update text
-            DrawText(_titleRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
+            DrawText(_textRenderTarget, Title, XAxisLabel, YAxisLabel, 20);
 
             // Generate bars 
             // If the same number of data points, update bars with new data. Else wipe and create new.
@@ -285,7 +285,7 @@ namespace BarGraphUtility
                 for (int i=0; i< _graphData.Length; i++)
                 {
                     // Animate bar height
-                    var oldBar = (Bar)(barValueMap[i]);
+                    var oldBar = (Bar)(_barValueMap[i]);
                     var newBarHeight = GetAdjustedBarHeight(maxValue, newData[i]);
 
                     // Update Bar

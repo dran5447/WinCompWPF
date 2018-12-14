@@ -126,6 +126,7 @@ namespace WinCompWPF
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
+            currentGraph.Dispose();
             DestroyWindow(hwnd.Handle);
         }
 

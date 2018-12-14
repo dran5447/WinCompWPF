@@ -1,9 +1,9 @@
 # WinCompWPF
 Hacking on a sample using Windows Composition APIs in WPF
 
-## Status as of 12/13
+## Status as of 12/14
 
-![status gif](https://i.makeagif.com/media/12-13-2018/4i7bmZ.gif)
+![status gif](https://media.giphy.com/media/5SBTMat7rzSf5xgG1Z/giphy.gif)
 
 ## Summary
 
@@ -15,6 +15,16 @@ Rough summary of what you'll find in the repo -
 - Graph uses Composition APIs and animations to enhance look & feel
 - Text rendered using SharpDX
 
-Sped up linear gradient animation on bars: 
+## TODO / Wish list
 
-![linear gradient animating gif](https://i.makeagif.com/media/12-13-2018/e0_Xg0.gif)
+- Update how data can be passed to the graph (include bar labels with data)
+- Automate graph resizing based on parent container size
+- Make graph orientation options (horizontal vs vertical)
+- Add more graph bar style options - shared linear gradient, blurred semi-transparent color, etc
+- Legend
+- Trend line on top of bars
+- Option for data sets (groups of bars)
+- Bar hover-over text
+- Ability to add data later on (abstract from constructor)
+- Text change property events to auto trigger text redraw
+- Options for min bar width

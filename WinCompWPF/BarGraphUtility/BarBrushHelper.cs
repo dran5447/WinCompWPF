@@ -95,28 +95,7 @@ namespace BarGraphUtility
 
                 i++;
             }
-
-
-
-            //var colorStop_2 = _compositor.CreateColorGradientStop(-1.0f, Colors.Yellow);
-            //var colorStop_1 = _compositor.CreateColorGradientStop(-0.5f, Colors.Orange);
-            //var colorStop0 = _compositor.CreateColorGradientStop(0.0f, Colors.Red);
-            //var colorStop1 = _compositor.CreateColorGradientStop(0.5f, Colors.Orange);
-            //var colorStop2 = _compositor.CreateColorGradientStop(1.0f, Colors.Yellow);
-
-            //lgb.ColorStops.Add(colorStop_2);
-            //lgb.ColorStops.Add(colorStop_1);
-            //lgb.ColorStops.Add(colorStop0);
-            //lgb.ColorStops.Add(colorStop1);
-            //lgb.ColorStops.Add(colorStop2);
-
             
-
-            //InitLGBAnimation(colorStop1,animationDuration);
-            //InitLGBAnimation(colorStop0,animationDuration);
-            //InitLGBAnimation(colorStop_1,animationDuration);
-            //InitLGBAnimation(colorStop_2,animationDuration);
-
             CompositionBrush[] brushes = new CompositionBrush[numBrushes];
             for (int j = 0; j < numBrushes; j++)
             {
@@ -137,14 +116,5 @@ namespace BarGraphUtility
             stop.StartAnimation(nameof(stop.Offset), animateStop);
         }
 
-        internal CompositionBrush[] GenerateSharedLinearGradient(int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal CompositionBrush[] GenerateTintedBlur(int length)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

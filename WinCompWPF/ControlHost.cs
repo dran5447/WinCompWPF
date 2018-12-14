@@ -36,6 +36,9 @@ namespace WinCompWPF
             hostWidth = (int)width;
         }
         
+        /*
+         * Create window and content
+         */ 
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
             // Create Window
@@ -58,6 +61,9 @@ namespace WinCompWPF
             return new HandleRef(this, hwndHost);
         }
 
+        /*
+         * Create dispatcher queue
+         */ 
         private object InitializeCoreDispatcher()
         {
             DispatcherQueueOptions options = new DispatcherQueueOptions();
@@ -70,6 +76,9 @@ namespace WinCompWPF
             return queue;
         }
 
+        /*
+         * Get compositor and target for hwnd
+         */ 
         private void InitComposition(IntPtr hwndHost)
         {
             ICompositorDesktopInterop interop;
@@ -89,16 +98,14 @@ namespace WinCompWPF
             target.Root = mainContainer;
         }
 
+        /*
+         * Handle Composition tree creation and updates
+         */ 
         public void UpdateGraph(Customer customer)
         {
             var graphTitle = customer.FirstName + " Investment History";
-            //TODO fix labels
             var xAxisTitle = "Investment #"; 
             var yAxisTitle = "# Shares of Stock";
-
-            //TODO update how data is passed and retrieved to graph (need to be able to include value + label for each bar in dataset)
-            //TODO get graph size from parent container size?
-
 
             // If graph already exists update values. Else create new graph.
             if (mainContainer.Children.Count > 0 && currentGraph!=null)
@@ -109,20 +116,13 @@ namespace WinCompWPF
             {
                 BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, 
                     hostWidth, hostHeight, customer.Data, 
-                    true, BarGraph.GraphOrientation.Vertical, 
-                    BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
+                    true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
                     new List<Color> {Colors.DarkBlue, Colors.BlueViolet, Colors.LightSkyBlue, Colors.White} );
 
                 currentGraph = graph;
                 mainContainer.Children.InsertAtTop(graph.GraphRoot);
             }
         }
-
-        public void UpdateGraphSize(float width, float height)
-        {
-
-        }
-
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {

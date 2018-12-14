@@ -27,7 +27,7 @@ namespace WinCompWPF
         }
 
         /*
-         * Generate customers and instantiate controls
+         * Generate customers, pass data to grid, and create host control
          */ 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {

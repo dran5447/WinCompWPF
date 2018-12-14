@@ -8,7 +8,6 @@ using TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode;
 using SharpDX.DXGI;
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace BarGraphUtility
@@ -37,27 +36,16 @@ namespace BarGraphUtility
         public string Title { get; set; }
         public string XAxisLabel { get; set; }
         public string YAxisLabel { get; set; }
-        public GraphOrientation Orientation { get; set; }
         public ContainerVisual BarRoot { get; }
         public ContainerVisual GraphRoot { get; }
         #endregion
 
-        //TODO make meaningful
-        public enum GraphOrientation
-        {
-            Vertical = 0,
-            Horizontal = 1
-        }
-
-        //TODO make meaningful
         public enum GraphBarStyle
         {
             Single = 0,
             Random = 1,
             PerBarLinearGradient = 3,
-            AmbientAnimatingPerBarLinearGradient = 4,
-            SharedLinearGradient = 5,
-            TintedBlur = 6
+            AmbientAnimatingPerBarLinearGradient = 4
         }
 
         /*
@@ -66,8 +54,8 @@ namespace BarGraphUtility
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
         public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, float[] data,//required parameters
-            bool AnimationsOn = true, GraphOrientation orientation = GraphOrientation.Vertical, GraphBarStyle graphBarStyle = GraphBarStyle.Single, 
-            List<Windows.UI.Color> barColors = null) //optional parameters
+            bool AnimationsOn = true, GraphBarStyle graphBarStyle = GraphBarStyle.Single, //optional parameters
+            List<Windows.UI.Color> barColors = null)
         {
             _compositor = compositor;
             _hwnd = hwnd;
@@ -78,8 +66,7 @@ namespace BarGraphUtility
             Title = title;
             XAxisLabel = xAxisLabel;
             YAxisLabel = yAxisLabel;
-
-            Orientation = orientation;
+            
             _graphBarStyle = graphBarStyle;
 
             if(barColors != null)
@@ -90,7 +77,6 @@ namespace BarGraphUtility
             {
                 _graphBarColors = new List<Windows.UI.Color>() { Colors.Blue };
             }
-           
 
             // Configure options for text
             var Factory2D = new SharpDX.Direct2D1.Factory();
@@ -103,13 +89,6 @@ namespace BarGraphUtility
             _titleRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
             _yAxisRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
 
-
-            //TODO legend
-            //TODO trend line on top of bars
-            //TODO surface or value on top of bars?
-            //TODO meaningful orientation options
-            //TODO option for data sets (more than one bar in a set, multiple sets per graph)
-
             // Generate graph structure
             var graphRoot = GenerateGraphStructure();
             GraphRoot = graphRoot;
@@ -118,8 +97,6 @@ namespace BarGraphUtility
             GraphRoot.Children.InsertAtTop(BarRoot);
 
             //If data has been provided init bars and animations, else leave graph empty
-            //TODO add ability to add data later on (move out of constructor)
-            //TODO add ability to either create individual bars or barsets for the graph
             if (_graphData.Length > 0)
             {
                 barValueMap = new Hashtable();
@@ -224,8 +201,12 @@ namespace BarGraphUtility
 
             // Rotate the RenderTarget back
             renderTarget.Transform = Matrix3x2.Identity;
+        }
 
-            //TODO dispose
+        public void Dispose()
+        {
+            //TODO dispose of text resources
+
             //textFormat.Dispose();
             //cachedTextLayout.Dispose();
             //tmpBrush.Dispose();
@@ -253,12 +234,6 @@ namespace BarGraphUtility
                     break;
                 case GraphBarStyle.AmbientAnimatingPerBarLinearGradient:
                     brushes = barBrushHelper.GenerateAmbientAnimatingPerBarLinearGradient(data.Length, _graphBarColors);
-                    break;
-                case GraphBarStyle.SharedLinearGradient:
-                    brushes = barBrushHelper.GenerateSharedLinearGradient(data.Length);
-                    break;
-                case GraphBarStyle.TintedBlur:
-                    brushes = barBrushHelper.GenerateTintedBlur(data.Length);
                     break;
                 default:
                     brushes = barBrushHelper.GenerateSingleColorBrush(data.Length, _graphBarColors[0]);
@@ -295,7 +270,6 @@ namespace BarGraphUtility
         public void UpdateGraphData(string title, string xAxisTitle, string yAxisTitle, float[] newData)
         {
             // Update properties
-            //TODO add property changed notifiers which will automatically trigger redraw instead of calling manually
             Title = title;
             XAxisLabel = xAxisTitle;
             YAxisLabel = yAxisTitle;
@@ -316,7 +290,7 @@ namespace BarGraphUtility
 
                     // Update Bar
                     oldBar.Height = newBarHeight; //Trigger height animation
-                    oldBar.Label = "something2"; //TODO update
+                    oldBar.Label = "something2";
                     oldBar.Value = newData[i];
                 }
             }
@@ -352,8 +326,7 @@ namespace BarGraphUtility
         }
 
         /*
-         * Return computed bar width for graph. Default spacing is 1/2 bar width. 
-         * TODO add option for min width or min spacing
+         * Return computed bar width for graph. Default spacing is 1/2 bar width.
          */
         private float ComputeBarWidth()
         {

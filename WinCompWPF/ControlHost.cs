@@ -6,6 +6,7 @@ using Windows.UI.Composition;
 using BarGraphUtility;
 using System.Collections.Generic;
 using Windows.UI;
+using System.Diagnostics;
 
 namespace WinCompWPF
 {
@@ -16,6 +17,8 @@ namespace WinCompWPF
     {
         IntPtr hwndHost;
         int hostHeight, hostWidth;
+        double hostDPI;
+        double wpfDPI;
         object dispatcherQueue;
         private ContainerVisual mainContainer;
         private Compositor c;
@@ -30,10 +33,12 @@ namespace WinCompWPF
           WS_VSCROLL = 0x00200000,
           WS_BORDER = 0x00800000;
 
-        public ControlHost(double height, double width)
+        public ControlHost(double height, double width, double dpi, double wpfDpi)
         {
             hostHeight = (int)height;
             hostWidth = (int)width;
+            hostDPI = (double)dpi;
+            wpfDPI = (double)wpfDpi;
         }
         
         /*
@@ -46,7 +51,8 @@ namespace WinCompWPF
             hwndHost = CreateWindowEx(0, "static", "",
                                       WS_CHILD | WS_VISIBLE,
                                       0, 0,
-                                      hostWidth, hostHeight,
+                                      (int)(hostWidth * hostDPI/96.0),
+                                      (int)(hostHeight * hostDPI / 96.0),
                                       hwndParent.Handle,
                                       (IntPtr)HOST_ID,
                                       IntPtr.Zero,
@@ -115,12 +121,21 @@ namespace WinCompWPF
             else
             {
                 BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, 
-                    hostWidth, hostHeight, customer.Data, 
+                    hostWidth, hostHeight, hostDPI, wpfDPI, customer.Data, 
                     true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
                     new List<Color> {Colors.DarkBlue, Colors.BlueViolet, Colors.LightSkyBlue, Colors.White} );
 
                 currentGraph = graph;
                 mainContainer.Children.InsertAtTop(graph.GraphRoot);
+            }
+        }
+
+        public void UpdateDPI(double newDPI, double wpfDPI, double newWidth, double newHeight)
+        {
+            //If a graph has been loaded, update it based on the new DPI
+            if(currentGraph != null)
+            {
+                currentGraph.UpdateDPI(newDPI, wpfDPI, newWidth, newHeight);
             }
         }
 

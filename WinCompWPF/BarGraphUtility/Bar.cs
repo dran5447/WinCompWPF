@@ -48,6 +48,14 @@ namespace BarGraphUtility
             CreateBar(maxBarHeight);
         }
 
+        public void UpdateSize(float width, float height)
+        {
+            Width = width;
+            Height = height;
+
+            rectGeometry.Size = new Vector2(Height, Width);
+        }
+
         public void CreateBar(float maxHeight)
         {
             shapeVisual = _compositor.CreateShapeVisual();

@@ -1,0 +1,8 @@
+﻿  pch.cpp
+  AssemblyInfo.cpp
+  PerMonitorDPIHelpers.cpp
+  PerMonitorDPIWindow.cpp
+  Generating Code...
+  AssemblyInfo.obj : /DEBUG:FASTLINK is not supported when managed code is present; restarting link with /DEBUG:FULL
+  AssemblyInfo.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  NativeHelpers.vcxproj -> C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\Debug\NativeHelpers.dll

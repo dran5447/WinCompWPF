@@ -1,4 +1,5 @@
-﻿<Window x:Class="WinCompWPF.MainWindow"
+﻿<src:PerMonitorDPIWindow 
+    x:Class="WinCompWPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,9 +7,10 @@
         xmlns:local="clr-namespace:WinCompWPF"
         xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationFramework"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200"
+        xmlns:src="clr-namespace:NativeHelpers;assembly=NativeHelpers" DPIChanged="PerMonitorDPIWindow_DPIChanged"
+        Title="MainWindow" Height="800" Width="1250"
         Loaded="Window_Loaded">
-    
+
     <DockPanel Background="White">
         <Grid Grid.Row="0"  Margin="10" DockPanel.Dock="Top">
             <Grid.ColumnDefinitions>
@@ -32,7 +34,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Margin="10,0">
+        <Grid Margin="10,0" VerticalAlignment="Top" HorizontalAlignment="Left" MaxWidth="600">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -41,24 +43,23 @@
 
             <TextBlock Grid.Row="0" FontWeight="DemiBold" FontStyle="Italic" FontFamily="Segoe" FontSize="15" Foreground="SteelBlue" Margin="0,0" >Select a row to show data graph on the right.</TextBlock>
             <TextBlock Grid.Row="1" FontStyle="Italic" FontFamily="Segoe" FontSize="13" Foreground="SteelBlue" Margin="0,0,0,10" >Select another to see the graph animate from one data set to the next.</TextBlock>
-            <DataGrid x:Name="CustomerGrid" Grid.Row="2" SelectionChanged="CustomerGrid_SelectionChanged" VerticalScrollBarVisibility="Auto" IsReadOnly="False" ItemsSource="{Binding Customers}" CanUserSortColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" AutoGenerateColumns="True">
+            <DataGrid x:Name="CustomerGrid" Grid.Row="2" SelectionChanged="CustomerGrid_SelectionChanged" VerticalScrollBarVisibility="Auto" IsReadOnly="False" ItemsSource="{Binding Customers}" CanUserSortColumns="True" AlternatingRowBackground="LightBlue" AlternationCount="2" AutoGenerateColumns="True" HorizontalAlignment="Left" MinWidth="0">
                 <DataGrid.ItemContainerStyle>
                     <Style TargetType="DataGridRow">
                     </Style>
                 </DataGrid.ItemContainerStyle>
             </DataGrid>
         </Grid>
-        
-        <StackPanel x:Name="DetailsPane" Orientation="Vertical" DockPanel.Dock="Right" >
+
+        <StackPanel x:Name="DetailsPane" Margin="0,0,10,0" Orientation="Vertical" DockPanel.Dock="Right" VerticalAlignment="Top" HorizontalAlignment="Left">
             <TextBlock FontSize="20">Investment History</TextBlock>
             <Border Name="ControlHostElement"
                 Width="600"
-                Height="500"
+                Height="600"
                 VerticalAlignment="Top"
                 BorderBrush="LightGray"
                 BorderThickness="3"/>
         </StackPanel>
     </DockPanel>
 
-   
-</Window>
+</src:PerMonitorDPIWindow>

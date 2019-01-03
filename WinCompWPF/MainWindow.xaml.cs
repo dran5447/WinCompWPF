@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using NativeHelpers;
 
 namespace WinCompWPF
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : PerMonitorDPIWindow //Window
     {
         Application app;
         Window myWindow;
@@ -26,14 +28,21 @@ namespace WinCompWPF
             InitializeComponent();
         }
 
+        private void PerMonitorDPIWindow_DPIChanged(object sender, EventArgs e)
+        {
+            if(this.ActualWidth > 0)
+            {
+                listControl.UpdateDPI(this.CurrentDPI, this.WpfDPI, ControlHostElement.Width, ControlHostElement.Height);
+            }
+        }
+
         /*
          * Generate customers, pass data to grid, and create host control
-         */ 
+         */
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             app = System.Windows.Application.Current;
             myWindow = app.MainWindow;
-            myWindow.SizeToContent = SizeToContent.WidthAndHeight;
 
             List<Customer> customers = new List<Customer>();
             for (int i = 0; i < customerFirstNames.Length; i++)
@@ -44,7 +53,7 @@ namespace WinCompWPF
 
             CustomerGrid.ItemsSource = customers;
 
-            listControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth);
+            listControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth, this.CurrentDPI, this.WpfDPI);
             ControlHostElement.Child = listControl;
         }
 

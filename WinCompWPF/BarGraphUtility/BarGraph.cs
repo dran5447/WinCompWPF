@@ -50,6 +50,9 @@ namespace BarGraphUtility
 
         private static float textSize = 20.0f;
 
+        private AmbientLight _ambientLight;
+        private PointLight _pointLight;
+
         #region public setters
         public string Title { get; set; }
         public string XAxisLabel { get; set; }
@@ -327,6 +330,8 @@ namespace BarGraphUtility
             {
                 BarRoot.Children.InsertAtTop(bars[i].Root);
             }
+
+            AddLight();
         }
 
 
@@ -365,6 +370,28 @@ namespace BarGraphUtility
 
             // Reset to new data
             _graphData = newData;
+        }
+
+        private void AddLight()
+        {
+            _ambientLight = _compositor.CreateAmbientLight();
+            _ambientLight.Color = Colors.White;
+            _ambientLight.Targets.Add(mainContainer);
+
+            _pointLight = _compositor.CreatePointLight();
+            _pointLight.Color = Windows.UI.Color.FromArgb(150,255,255,255); //Semi-transparent white
+            _pointLight.CoordinateSpace = mainContainer;
+            _pointLight.Targets.Add(BarRoot);
+
+            var start = new System.Numerics.Vector3(0, _graphHeight / 2, 100);
+            var end = new System.Numerics.Vector3(_graphWidth, _graphHeight / 2, 100);
+            Vector3KeyFrameAnimation anim = _compositor.CreateVector3KeyFrameAnimation();
+            anim.InsertKeyFrame(0.0f, start);
+            anim.InsertKeyFrame(0.5f, end);
+            anim.InsertKeyFrame(1.0f, start);
+            anim.Duration = TimeSpan.FromSeconds(20);
+            anim.IterationBehavior = AnimationIterationBehavior.Forever;
+            _pointLight.StartAnimation(nameof(_pointLight.Offset), anim);
         }
 
         private float GetMaxBarValue(float[] data)

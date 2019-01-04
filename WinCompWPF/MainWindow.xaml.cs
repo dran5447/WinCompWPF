@@ -32,7 +32,7 @@ namespace WinCompWPF
         {
             if(this.ActualWidth > 0)
             {
-                listControl.UpdateDPI(this.CurrentDPI, this.WpfDPI, ControlHostElement.Width, ControlHostElement.Height);
+                listControl.UpdateDPI(this.CurrentDPI, ControlHostElement.Width, ControlHostElement.Height);
             }
         }
 
@@ -53,7 +53,7 @@ namespace WinCompWPF
 
             CustomerGrid.ItemsSource = customers;
 
-            listControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth, this.CurrentDPI, this.WpfDPI);
+            listControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth, this.CurrentDPI);
             ControlHostElement.Child = listControl;
         }
 

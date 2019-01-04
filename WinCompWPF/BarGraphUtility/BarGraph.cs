@@ -71,7 +71,7 @@ namespace BarGraphUtility
          * For now only does single bars, no grouping
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
-        public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, double dpi, double wpfDpi, float[] data,//required parameters
+        public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, double dpi, float[] data,//required parameters
             bool AnimationsOn = true, GraphBarStyle graphBarStyle = GraphBarStyle.Single, //optional parameters
             List<Windows.UI.Color> barColors = null)
         {
@@ -183,7 +183,7 @@ namespace BarGraphUtility
             return mainContainer;
         }
 
-        public void UpdateDPI(double newDPI, double wpfDPI, double newWidth, double newHeight)
+        public void UpdateDPI(double newDPI, double newWidth, double newHeight)
         {
             var oldHeight = _graphHeight;
             var oldWidth = _graphWidth;

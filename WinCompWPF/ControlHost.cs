@@ -18,7 +18,6 @@ namespace WinCompWPF
         IntPtr hwndHost;
         int hostHeight, hostWidth;
         double hostDPI;
-        double wpfDPI;
         object dispatcherQueue;
         private ContainerVisual mainContainer;
         private Compositor c;
@@ -33,12 +32,11 @@ namespace WinCompWPF
           WS_VSCROLL = 0x00200000,
           WS_BORDER = 0x00800000;
 
-        public ControlHost(double height, double width, double dpi, double wpfDpi)
+        public ControlHost(double height, double width, double dpi)
         {
             hostHeight = (int)height;
             hostWidth = (int)width;
             hostDPI = (double)dpi;
-            wpfDPI = (double)wpfDpi;
         }
         
         /*
@@ -121,7 +119,7 @@ namespace WinCompWPF
             else
             {
                 BarGraph graph = new BarGraph(c, hwndHost, graphTitle, xAxisTitle, yAxisTitle, 
-                    hostWidth, hostHeight, hostDPI, wpfDPI, customer.Data, 
+                    hostWidth, hostHeight, hostDPI, customer.Data, 
                     true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient, 
                     new List<Color> {Colors.DarkBlue, Colors.BlueViolet, Colors.LightSkyBlue, Colors.White} );
 
@@ -130,12 +128,12 @@ namespace WinCompWPF
             }
         }
 
-        public void UpdateDPI(double newDPI, double wpfDPI, double newWidth, double newHeight)
+        public void UpdateDPI(double newDPI, double newWidth, double newHeight)
         {
             //If a graph has been loaded, update it based on the new DPI
             if(currentGraph != null)
             {
-                currentGraph.UpdateDPI(newDPI, wpfDPI, newWidth, newHeight);
+                currentGraph.UpdateDPI(newDPI, newWidth, newHeight);
             }
         }
 

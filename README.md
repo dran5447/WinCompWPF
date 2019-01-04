@@ -5,6 +5,8 @@ Hacking on a sample using Windows Composition APIs in WPF
 
 ![status gif](https://media.giphy.com/media/YlVSPYKUTi5f68weAz/giphy.gif)
 
+Close up on lights targeting bar outlines [here](https://media.giphy.com/media/iqAR8LDJKqwuOmlN2l/giphy.mp4).
+
 ## Summary
 
 Rough summary of what you'll find in the repo - 

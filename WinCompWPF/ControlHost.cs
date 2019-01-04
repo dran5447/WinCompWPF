@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace WinCompWPF
 {
     /*
-     * Host for Composition content
+     * Host Win32 window to attach our content to
      */ 
     class ControlHost: HwndHost
     {
@@ -96,7 +96,7 @@ namespace WinCompWPF
             object rawObject = Marshal.GetObjectForIUnknown(raw);
             ICompositionTarget target = (ICompositionTarget)rawObject;
 
-            if (raw == null) { throw new Exception("QI Failed"); } //TODO: cleanup
+            if (raw == null) { throw new Exception("QI Failed"); }
 
             mainContainer = c.CreateContainerVisual();
             target.Root = mainContainer;

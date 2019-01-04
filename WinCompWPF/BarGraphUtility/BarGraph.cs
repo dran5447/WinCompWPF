@@ -9,7 +9,6 @@ using SharpDX.DXGI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace BarGraphUtility
 {
@@ -284,8 +283,6 @@ namespace BarGraphUtility
             //Clear hashmap 
             _barValueMap.Clear();
 
-
-            // TODO break out into separate UpdateColors method?
             var barBrushHelper = new BarGraphUtility.BarBrushHelper(_compositor);
             CompositionBrush[] brushes = new CompositionBrush[data.Length];
             switch (_graphBarStyle)

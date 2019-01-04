@@ -51,7 +51,7 @@ namespace BarGraphUtility
         private static float textSize = 20.0f;
 
         private AmbientLight _ambientLight;
-        private PointLight _pointLight;
+        private SpotLight _spotLight;
 
         #region public setters
         public string Title { get; set; }
@@ -209,6 +209,7 @@ namespace BarGraphUtility
 
                 bar.UpdateSize(_barWidth, height);
                 bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight, 0);
+                bar.OutlineRoot.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight, 0);
             }
 
             // Update text render target and redraw text
@@ -255,7 +256,7 @@ namespace BarGraphUtility
             renderTarget.EndDraw();
 
             // Rotate render target to draw y axis text
-            renderTarget.Transform = Matrix3x2.Rotation((float)(-Math.PI / 2), new Vector2(0, containerHeight));//_shapeGraphContainerHeight));
+            renderTarget.Transform = Matrix3x2.Rotation((float)(-Math.PI / 2), new Vector2(0, containerHeight));
 
             renderTarget.BeginDraw();
 
@@ -314,7 +315,8 @@ namespace BarGraphUtility
                 var height = GetAdjustedBarHeight(maxValue, _graphData[i]);
 
                 var bar = new BarGraphUtility.Bar(_compositor, _shapeGraphContainerHeight, height, _barWidth, "something", _graphData[i], brushes[i]);
-                bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight , 0);
+                bar.OutlineRoot.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight , 0);
+                bar.Root.Offset = new System.Numerics.Vector3(xOffset, _shapeGraphContainerHeight, 0);
 
                 _barValueMap.Add(i, bar);
 
@@ -328,7 +330,9 @@ namespace BarGraphUtility
             BarRoot.Children.RemoveAll();
             for (int i = 0; i < bars.Length; i++)
             {
+                BarRoot.Children.InsertAtTop(bars[i].OutlineRoot);
                 BarRoot.Children.InsertAtTop(bars[i].Root);
+                
             }
 
             AddLight();
@@ -378,20 +382,30 @@ namespace BarGraphUtility
             _ambientLight.Color = Colors.White;
             _ambientLight.Targets.Add(mainContainer);
 
-            _pointLight = _compositor.CreatePointLight();
-            _pointLight.Color = Windows.UI.Color.FromArgb(150,255,255,255); //Semi-transparent white
-            _pointLight.CoordinateSpace = mainContainer;
-            _pointLight.Targets.Add(BarRoot);
+            _spotLight = _compositor.CreateSpotLight();
+            _spotLight.InnerConeColor = Colors.White;
+            _spotLight.OuterConeColor = Colors.AntiqueWhite;
+            _spotLight.CoordinateSpace = mainContainer;
+            _spotLight.InnerConeAngleInDegrees = 45;
+            _spotLight.OuterConeAngleInDegrees = 80;
 
-            var start = new System.Numerics.Vector3(0, _graphHeight / 2, 100);
-            var end = new System.Numerics.Vector3(_graphWidth, _graphHeight / 2, 100);
+            // Target bar outlines with light
+            for (int i = 0; i < _barValueMap.Count; i++)
+            {
+                Bar bar = (Bar)_barValueMap[i];
+                _spotLight.Targets.Add(bar.OutlineRoot);
+            }
+
+
+            var start = new System.Numerics.Vector3(0, 0, 80);
+            var end = new System.Numerics.Vector3(_graphWidth, _graphHeight, 80);
             Vector3KeyFrameAnimation anim = _compositor.CreateVector3KeyFrameAnimation();
             anim.InsertKeyFrame(0.0f, start);
             anim.InsertKeyFrame(0.5f, end);
             anim.InsertKeyFrame(1.0f, start);
             anim.Duration = TimeSpan.FromSeconds(20);
             anim.IterationBehavior = AnimationIterationBehavior.Forever;
-            _pointLight.StartAnimation(nameof(_pointLight.Offset), anim);
+            _spotLight.StartAnimation(nameof(_spotLight.Offset), anim);
         }
 
         private float GetMaxBarValue(float[] data)

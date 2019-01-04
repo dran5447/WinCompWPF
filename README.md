@@ -3,7 +3,7 @@ Hacking on a sample using Windows Composition APIs in WPF
 
 ## Status as of 12/14
 
-![status gif](https://media.giphy.com/media/3miIZDX0koxRymHc8l/giphy.gif)
+![status gif](https://media.giphy.com/media/YlVSPYKUTi5f68weAz/giphy.gif)
 
 ## Summary
 

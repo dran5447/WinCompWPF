@@ -5,7 +5,7 @@ namespace WinCompWPF
     /*
      * Base customer object with a selection of data
      */ 
-    class Customer
+    public class Customer
     {
         public Customer(string id, string firstname, string lastname, DateTime customerSince, bool newslettersubscriber, float[] data)
         {

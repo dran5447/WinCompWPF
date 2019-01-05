@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
+using System.Windows.Data;
+using BarGraphUtility;
 using NativeHelpers;
+using Windows.UI;
+using Windows.UI.Composition;
 
 namespace WinCompWPF
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : PerMonitorDPIWindow //Window
+    public partial class MainWindow : PerMonitorDPIWindow
     {
         Application app;
         Window myWindow;
-
-        private ControlHost listControl;
 
         private Random random = new Random();
         private string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         private string[] customerFirstNames = new string[] { "Angel", "Josephine", "Wade", "Christie", "Whitney", "Ismael", "Alexandra", "Rhonda", "Dawn", "Roman", "Emanuel", "Evan", "Aaron", "Bill", "Margaret", "Mandy", "Carlton", "Cornelius", "Cora", "Alejandro", "Annette", "Bertha", "John", "Billy", "Randall" };
         private string[] customerLastNames = new string[] { "Murphy", "Swanson", "Sandoval", "Moore", "Adkins", "Tucker", "Cook", "Fernandez", "Schwartz", "Sharp", "Bryant", "Gross", "Spencer", "Powers", "Hunter", "Moreno", "Baldwin", "Stewart", "Rice", "Watkins", "Hawkins", "Dean", "Howard", "Bailey", "Gill" };
+
+        private HwndHostControl hostControl;
+        private BarGraph currentGraph;
+        private ContainerVisual graphContainer;
 
         public MainWindow()
         {
@@ -32,7 +36,7 @@ namespace WinCompWPF
         {
             if(this.ActualWidth > 0)
             {
-                listControl.UpdateDPI(this.CurrentDPI, ControlHostElement.Width, ControlHostElement.Height);
+                currentGraph.UpdateDPI(this.CurrentDPI, ControlHostElement.Width, ControlHostElement.Height);
             }
         }
 
@@ -53,8 +57,37 @@ namespace WinCompWPF
 
             CustomerGrid.ItemsSource = customers;
 
-            listControl = new ControlHost(ControlHostElement.ActualHeight, ControlHostElement.ActualWidth, this.CurrentDPI);
-            ControlHostElement.Child = listControl;
+            hostControl = new HwndHostControl(ControlHostElement.Width, ControlHostElement.Height, this.CurrentDPI);
+
+            ControlHostElement.Child = hostControl;
+            graphContainer = hostControl.Compositor.CreateContainerVisual();
+            hostControl.Child = graphContainer;
+        }
+
+        /*
+         * Handle Composition tree creation and updates
+         */
+        public void UpdateGraph(Customer customer)
+        {
+            var graphTitle = customer.FirstName + " Investment History";
+            var xAxisTitle = "Investment #";
+            var yAxisTitle = "# Shares of Stock";
+
+            // If graph already exists update values. Else create new graph.
+            if (graphContainer.Children.Count > 0 && currentGraph != null)
+            {
+                currentGraph.UpdateGraphData(graphTitle, xAxisTitle, yAxisTitle, customer.Data);
+            }
+            else
+            {
+                BarGraph graph = new BarGraph(hostControl.Compositor, hostControl.hwndHost, graphTitle, xAxisTitle, yAxisTitle,
+                    (float)ControlHostElement.Width, (float)ControlHostElement.Height, this.CurrentDPI, customer.Data,
+                    true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient,
+                    new List<Color> { Colors.DarkBlue, Colors.BlueViolet, Colors.LightSkyBlue, Colors.White });
+
+                currentGraph = graph;
+                graphContainer.Children.InsertAtTop(graph.GraphRoot);
+            }
         }
 
         /*
@@ -62,7 +95,7 @@ namespace WinCompWPF
          */
         private void CustomerGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            listControl.UpdateGraph((Customer)CustomerGrid.SelectedItem);
+            UpdateGraph((Customer)CustomerGrid.SelectedItem);
         }
 
         /*

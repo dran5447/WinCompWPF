@@ -73,3 +73,10 @@ C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\Sha
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\SharpDX.Mathematics.xml
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\NativeHelpers.dll
 C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\NativeHelpers.pdb
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\WinCompWPFWinForms.exe.manifest
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\bin\Debug\WinCompWPFWinForms.application
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\WinCompWPFWinForms.exe.manifest
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\WinCompWPFWinForms.application
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\HwndHostControl.g.cs
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\daneuber\source\repos\DanielleRemoteWinCompWPF\WinCompWPF\obj\Debug\HwndHostControl.baml

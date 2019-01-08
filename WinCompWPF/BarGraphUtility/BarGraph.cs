@@ -73,14 +73,14 @@ namespace BarGraphUtility
          * For now only does single bars, no grouping
          * As of 12/6 to insert graph, call the constructor then use barGraph.Root to get the container to parent
          */
-        public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, double dpi, float[] data,//required parameters
+        public BarGraph(Compositor compositor, IntPtr hwnd, string title, string xAxisLabel, string yAxisLabel, float width, float height, double dpiX, double dpiY, float[] data,//required parameters
             bool AnimationsOn = true, GraphBarStyle graphBarStyle = GraphBarStyle.Single, //optional parameters
             List<Windows.UI.Color> barColors = null)
         {
             _compositor = compositor;
             _hwnd = hwnd;
-            this._graphWidth = (float)(width * dpi / 96.0);
-            this._graphHeight = (float)(height * dpi / 96.0);
+            this._graphWidth = (float)(width * dpiX / 96.0);
+            this._graphHeight = (float)(height * dpiY / 96.0);
 
             this._graphTextWidth = (float)(width);
             this._graphTextHeight = (float)(height);
@@ -107,12 +107,12 @@ namespace BarGraphUtility
 
             HwndRenderTargetProperties properties = new HwndRenderTargetProperties();
             properties.Hwnd = _hwnd;
-            properties.PixelSize = new SharpDX.Size2((int)(width * dpi / 96.0), (int)(width * dpi / 96.0));
+            properties.PixelSize = new SharpDX.Size2((int)(width * dpiX / 96.0), (int)(width * dpiY / 96.0));
             properties.PresentOptions = PresentOptions.None;
 
             _textRenderTarget = new WindowRenderTarget(Factory2D, new RenderTargetProperties(new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied)), properties);
-            _textRenderTarget.DotsPerInch = new Size2F((float)dpi, (float)dpi);
-            _textRenderTarget.Resize(new Size2((int)(width * dpi / 96.0), (int)(width * dpi / 96.0)));
+            _textRenderTarget.DotsPerInch = new Size2F((float)dpiX, (float)dpiY);
+            _textRenderTarget.Resize(new Size2((int)(width * dpiX / 96.0), (int)(width * dpiY / 96.0)));
 
             // Generate graph structure
             var graphRoot = GenerateGraphStructure();
@@ -185,12 +185,12 @@ namespace BarGraphUtility
             return mainContainer;
         }
 
-        public void UpdateDPI(double newDPI, double newWidth, double newHeight)
+        public void UpdateDPI(double newDpiX, double newDpiY, double newWidth, double newHeight)
         {
             var oldHeight = _graphHeight;
             var oldWidth = _graphWidth;
-            _graphHeight = (float)(newWidth * newDPI / 96.0);
-            _graphWidth = (float)(newHeight * newDPI / 96.0);
+            _graphHeight = (float)(newWidth * newDpiY / 96.0);
+            _graphWidth = (float)(newHeight * newDpiX / 96.0);
 
             UpdateSizeAndPositions();
 
@@ -212,8 +212,8 @@ namespace BarGraphUtility
             }
 
             // Update text render target and redraw text
-            _textRenderTarget.DotsPerInch = new Size2F((float)newDPI, (float)newDPI);
-            _textRenderTarget.Resize(new Size2((int)(newWidth * newDPI / 96.0), (int)(newWidth * newDPI / 96.0)));
+            _textRenderTarget.DotsPerInch = new Size2F((float)newDpiX, (float)newDpiY);
+            _textRenderTarget.Resize(new Size2((int)(newWidth * newDpiX / 96.0), (int)(newWidth * newDpiY / 96.0)));
             DrawText(_textRenderTarget, Title, XAxisLabel, YAxisLabel, textSize);
         }
        

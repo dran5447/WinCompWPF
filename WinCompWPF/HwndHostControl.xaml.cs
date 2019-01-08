@@ -19,7 +19,7 @@ namespace WinCompWPF
         }
         object dispatcherQueue;
         int hostHeight, hostWidth;
-        double hostDPI;
+        double hostDpiX, hostDpiY;
         public Compositor Compositor { get; private set; }
 
         private ICompositionTarget compositionTarget;
@@ -44,11 +44,12 @@ namespace WinCompWPF
             }
         }
 
-        public HwndHostControl(double height, double width, double dpi)
+        public HwndHostControl(double height, double width, double dpiX, double dpiY)
         {
             hostHeight = (int)height;
             hostWidth = (int)width;
-            hostDPI = (double)dpi;
+            hostDpiX = (double)dpiX;
+            hostDpiY = (double)dpiY;
         }
 
         /*
@@ -61,8 +62,8 @@ namespace WinCompWPF
             hwndHost = CreateWindowEx(0, "static", "",
                                       WS_CHILD | WS_VISIBLE,
                                       0, 0,
-                                      (int)(Width * hostDPI / 96.0),
-                                      (int)(Height* hostDPI / 96.0),
+                                      (int)(Width * hostDpiX / 96.0),
+                                      (int)(Height * hostDpiY / 96.0),
                                       hwndParent.Handle,
                                       (IntPtr)HOST_ID,
                                       IntPtr.Zero,

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using BarGraphUtility;
-using NativeHelpers;
+using System.Windows.Media;
 using Windows.UI;
 using Windows.UI.Composition;
 
@@ -13,7 +13,7 @@ namespace WinCompWPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : PerMonitorDPIWindow
+    public partial class MainWindow : Window
     {
         Application app;
         Window myWindow;
@@ -25,19 +25,14 @@ namespace WinCompWPF
 
         private HwndHostControl hostControl;
         private BarGraph currentGraph;
-        private ContainerVisual graphContainer;
+        private Windows.UI.Composition.ContainerVisual graphContainer;
+
+        private double currentDpiX = 96.0;
+        private double currentDpiY = 96.0;
 
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void PerMonitorDPIWindow_DPIChanged(object sender, EventArgs e)
-        {
-            if(this.ActualWidth > 0)
-            {
-                currentGraph.UpdateDPI(this.CurrentDPI, ControlHostElement.Width, ControlHostElement.Height);
-            }
         }
 
         /*
@@ -47,7 +42,7 @@ namespace WinCompWPF
         {
             app = System.Windows.Application.Current;
             myWindow = app.MainWindow;
-
+            
             List<Customer> customers = new List<Customer>();
             for (int i = 0; i < customerFirstNames.Length; i++)
             {
@@ -57,11 +52,28 @@ namespace WinCompWPF
 
             CustomerGrid.ItemsSource = customers;
 
-            hostControl = new HwndHostControl(ControlHostElement.Width, ControlHostElement.Height, this.CurrentDPI);
+            var currentDpi = VisualTreeHelper.GetDpi(CustomerGrid);
+            currentDpiX = currentDpi.PixelsPerInchX;
+            currentDpiY = currentDpi.PixelsPerInchY;
+            hostControl = new HwndHostControl(ControlHostElement.Width, ControlHostElement.Height, currentDpiX, currentDpiY);
+
+            hostControl.DpiChanged += HostControl_DpiChanged;
 
             ControlHostElement.Child = hostControl;
             graphContainer = hostControl.Compositor.CreateContainerVisual();
             hostControl.Child = graphContainer;
+        }
+
+        private void HostControl_DpiChanged(object sender, DpiChangedEventArgs e)
+        {
+            currentDpiX = e.NewDpi.PixelsPerInchX;
+            currentDpiY = e.NewDpi.PixelsPerInchY;
+
+            if (this.ActualWidth > 0 && currentGraph != null)
+            {
+                currentGraph.UpdateDPI(currentDpiX, currentDpiY, ControlHostElement.Width, ControlHostElement.Height);
+            }
+
         }
 
         /*
@@ -81,9 +93,9 @@ namespace WinCompWPF
             else
             {
                 BarGraph graph = new BarGraph(hostControl.Compositor, hostControl.hwndHost, graphTitle, xAxisTitle, yAxisTitle,
-                    (float)ControlHostElement.Width, (float)ControlHostElement.Height, this.CurrentDPI, customer.Data,
+                    (float)ControlHostElement.Width, (float)ControlHostElement.Height, currentDpiX, currentDpiY, customer.Data,   //TODO update DPI variable
                     true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient,
-                    new List<Color> { Colors.DarkBlue, Colors.BlueViolet, Colors.LightSkyBlue, Colors.White });
+                    new List<Windows.UI.Color> { Windows.UI.Colors.DarkBlue, Windows.UI.Colors.BlueViolet, Windows.UI.Colors.LightSkyBlue, Windows.UI.Colors.White });
 
                 currentGraph = graph;
                 graphContainer.Children.InsertAtTop(graph.GraphRoot);

@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 using BarGraphUtility;
 using System.Windows.Media;
-using Windows.UI;
-using Windows.UI.Composition;
 
 namespace WinCompWPF
 {
@@ -138,7 +135,7 @@ namespace WinCompWPF
             else
             {
                 BarGraph graph = new BarGraph(hostControl.Compositor, hostControl.hwndHost, graphTitle, xAxisTitle, yAxisTitle,
-                    (float)ControlHostElement.Width, (float)ControlHostElement.Height, currentDpiX, currentDpiY, customer.Data,   //TODO update DPI variable
+                    (float)ControlHostElement.Width, (float)ControlHostElement.Height, currentDpiX, currentDpiY, customer.Data, 
                     true, BarGraph.GraphBarStyle.PerBarLinearGradient,
                     new List<Windows.UI.Color> { Windows.UI.Color.FromArgb(255,246, 65, 108), Windows.UI.Color.FromArgb(255, 255, 246, 183)});
 
@@ -160,7 +157,7 @@ namespace WinCompWPF
          */
         private float[] GenerateRandomData()
         {
-            var numDataPoints = 6;//random.Next(2, 8);
+            var numDataPoints = 6;
             float[] data = new float[numDataPoints];
 
             for (int j = 0; j < numDataPoints; j++)

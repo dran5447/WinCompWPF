@@ -2,9 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Windows.UI.Composition;
-using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Data;
 
 namespace WinCompWPF
 {

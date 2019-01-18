@@ -1,9 +1,9 @@
 # WinCompWPF
 Hacking on a sample using Windows Composition APIs in WPF
 
-## Status as of 12/14
+## Status as of 1/18
 
-![status gif](https://media.giphy.com/media/2fJLyxV561XaqglsQM/giphy.gif)
+![status gif](https://media.giphy.com/media/ckzSDh68pZEgg8zXjt/giphy.gif)
 
 Close up on lights targeting bar outlines [here](https://media.giphy.com/media/iqAR8LDJKqwuOmlN2l/giphy.mp4).
 

@@ -122,6 +122,41 @@ namespace WinCompWPF
             DestroyWindow(hwnd.Handle);
         }
 
+        protected override IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            const int WM_MOUSEMOVE = 0x0200;
+            const int WM_LBUTTONDOWN = 0x0201;
+            switch (msg)
+            {                
+                case WM_MOUSEMOVE:
+                    var pos = PointToScreen(new Point((short)(((int)lParam) & 0xffff), (short)(((int)lParam) >> 16)));
+                    RaiseHwndMouseMove(new HwndMouseEventArgs(pos));
+                    break;
+                case WM_LBUTTONDOWN:
+                    RaiseHwndMouseLClick(new HwndMouseEventArgs());
+                    break;
+            }
+
+            return base.WndProc(hwnd, msg, wParam, lParam, ref handled);
+        }
+
+        protected virtual void RaiseHwndMouseMove(HwndMouseEventArgs args)
+        {
+            var handler = MouseMoved;
+            if (handler != null)
+                handler(this, args);
+        }
+
+        protected virtual void RaiseHwndMouseLClick(HwndMouseEventArgs args)
+        {
+            var handler = MouseLClick;
+            if (handler != null)
+                handler(this, args);
+        }
+
+        public event EventHandler<HwndMouseEventArgs> MouseLClick;
+        public event EventHandler<HwndMouseEventArgs> MouseMoved;
+
 
         #region PInvoke declarations
 
@@ -192,25 +227,37 @@ namespace WinCompWPF
         [DllImport("user32.dll", EntryPoint = "DestroyWindow", CharSet = CharSet.Unicode)]
         internal static extern bool DestroyWindow(IntPtr hwnd);
 
-
         #endregion PInvoke declarations
     }
 
-    #region COM Interop
 
-    /*
-    #undef INTERFACE
-    #define INTERFACE ICompositorDesktopInterop
-        DECLARE_INTERFACE_IID_(ICompositorDesktopInterop, IUnknown, "29E691FA-4567-4DCA-B319-D0F207EB6807")
+    public class HwndMouseEventArgs : EventArgs
+    {
+        public Point point { get; set; }
+
+        public HwndMouseEventArgs(Point point)
         {
-            IFACEMETHOD(CreateDesktopWindowTarget)(
-                _In_ HWND hwndTarget,
-                _In_ BOOL isTopmost,
-                _COM_Outptr_ IDesktopWindowTarget * *result
-                ) PURE;
-        };
-    */
-    [ComImport]
+            this.point = point;
+        }
+        public HwndMouseEventArgs(){        }
+    }
+
+
+#region COM Interop
+
+/*
+#undef INTERFACE
+#define INTERFACE ICompositorDesktopInterop
+    DECLARE_INTERFACE_IID_(ICompositorDesktopInterop, IUnknown, "29E691FA-4567-4DCA-B319-D0F207EB6807")
+    {
+        IFACEMETHOD(CreateDesktopWindowTarget)(
+            _In_ HWND hwndTarget,
+            _In_ BOOL isTopmost,
+            _COM_Outptr_ IDesktopWindowTarget * *result
+            ) PURE;
+    };
+*/
+[ComImport]
     [Guid("29E691FA-4567-4DCA-B319-D0F207EB6807")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface ICompositorDesktopInterop
@@ -240,4 +287,6 @@ namespace WinCompWPF
     }
 
     #endregion COM Interop
+
 }
+

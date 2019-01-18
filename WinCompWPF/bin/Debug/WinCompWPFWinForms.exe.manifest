@@ -126,14 +126,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WinCompWPFWinForms.exe" size="37824">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WinCompWPFWinForms.exe" size="39872">
       <assemblyIdentity name="WinCompWPFWinForms" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>tIRZ3PkNZtq3BiNa2IKvYz4Ugkz1Rgu1K/NonzUYpg0=</dsig:DigestValue>
+        <dsig:DigestValue>k1pjTvMcNYiOpJOK0EAtGleMpVcFs6nz8vsYwe1+SUU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

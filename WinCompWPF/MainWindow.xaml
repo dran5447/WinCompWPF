@@ -31,7 +31,7 @@
                     <Setter Property="Foreground" Value="#F6416C" />
                 </Trigger>
             </Style.Triggers>
-            <Setter Property="Padding" Value="0,15,150,15"/>
+            <Setter Property="Padding" Value="0,15,10,15"/>
             <Setter Property="FontSize" Value="17"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -113,7 +113,7 @@
                     BorderThickness="3"/>
             </StackPanel>
 
-            <Grid Margin="200,0,200,20" VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="2">
+            <Grid Margin="50,0,50,20" VerticalAlignment="Top" HorizontalAlignment="Stretch" Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="20*"/>

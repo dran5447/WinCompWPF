@@ -61,9 +61,52 @@ namespace WinCompWPF
 
             hostControl.DpiChanged += HostControl_DpiChanged;
 
+            hostControl.MouseMoved += HostControl_MouseMoved;
+            hostControl.MouseLClick += HostControl_MouseLClick;
+
             ControlHostElement.Child = hostControl;
             graphContainer = hostControl.Compositor.CreateContainerVisual();
             hostControl.Child = graphContainer;
+        }
+
+        private void HostControl_MouseLClick(object sender, HwndMouseEventArgs e)
+        {
+            //TODO get clicked element
+        }
+
+        private void HostControl_MouseMoved(object sender, HwndMouseEventArgs e)
+        {
+            //Adjust light position
+            if (currentGraph != null)
+            {
+                //Convert mouse position to DIP (is raised in physical pixels)
+                var posDip = GetPointInDIP(e.point);
+
+                Point adjustedTopLeft = GetControlPointInDIP(ControlHostElement);
+
+                //Get point relative to control
+                Point relativePoint = new Point(posDip.X - adjustedTopLeft.X, posDip.Y - adjustedTopLeft.Y);
+
+                //Update light position
+                currentGraph.UpdateLight(relativePoint);
+            }
+        }
+
+        private Point GetPointInDIP(Point point)
+        {
+            var posDipX = point.X / (currentDpiX / 96.0);
+            var posDipY = point.Y / (currentDpiY / 96.0);
+            return new Point(posDipX, posDipY);
+        }
+
+        private Point GetControlPointInDIP(UIElement control)
+        {
+            //Get bounds of hwnd host control
+            Point controlTopLeft = control.PointToScreen(new Point(0, 0));  //top left of control relative to screen
+            //Convert screen coord to DIP
+            var adjustedX = controlTopLeft.X / (currentDpiX / 96.0);
+            var adjustedY = controlTopLeft.Y / (currentDpiY / 96.0);
+            return new Point(adjustedX, adjustedY);
         }
 
         private void HostControl_DpiChanged(object sender, DpiChangedEventArgs e)

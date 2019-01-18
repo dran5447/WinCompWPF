@@ -50,7 +50,8 @@ namespace BarGraphUtility
         private static float textSize = 20.0f;
 
         private AmbientLight _ambientLight;
-        private SpotLight _spotLight;
+        private SpotLight _barOutlineLight;
+        private PointLight _barLight;
 
         #region public setters
         public string Title { get; set; }
@@ -379,30 +380,45 @@ namespace BarGraphUtility
             _ambientLight.Color = Colors.White;
             _ambientLight.Targets.Add(mainContainer);
 
-            _spotLight = _compositor.CreateSpotLight();
-            _spotLight.InnerConeColor = Colors.White;
-            _spotLight.OuterConeColor = Colors.AntiqueWhite;
-            _spotLight.CoordinateSpace = mainContainer;
-            _spotLight.InnerConeAngleInDegrees = 45;
-            _spotLight.OuterConeAngleInDegrees = 80;
+            var innerConeColor = Colors.White;
+            var outerConeColor = Colors.AntiqueWhite;
 
-            // Target bar outlines with light
+            _barOutlineLight = _compositor.CreateSpotLight();
+            _barOutlineLight.InnerConeColor = innerConeColor;
+            _barOutlineLight.OuterConeColor = outerConeColor;
+            _barOutlineLight.CoordinateSpace = mainContainer;
+            _barOutlineLight.InnerConeAngleInDegrees = 45;
+            _barOutlineLight.OuterConeAngleInDegrees = 80;
+
+            _barOutlineLight.Offset = new System.Numerics.Vector3(0, 0, 80);
+
+            // Target bars outlines with light
             for (int i = 0; i < _barValueMap.Count; i++)
             {
                 Bar bar = (Bar)_barValueMap[i];
-                _spotLight.Targets.Add(bar.OutlineRoot);
+                _barOutlineLight.Targets.Add(bar.OutlineRoot);
             }
 
 
-            var start = new System.Numerics.Vector3(0, 0, 80);
-            var end = new System.Numerics.Vector3(_graphWidth, _graphHeight, 80);
-            Vector3KeyFrameAnimation anim = _compositor.CreateVector3KeyFrameAnimation();
-            anim.InsertKeyFrame(0.0f, start);
-            anim.InsertKeyFrame(0.5f, end);
-            anim.InsertKeyFrame(1.0f, start);
-            anim.Duration = TimeSpan.FromSeconds(20);
-            anim.IterationBehavior = AnimationIterationBehavior.Forever;
-            _spotLight.StartAnimation(nameof(_spotLight.Offset), anim);
+            _barLight = _compositor.CreatePointLight();
+            _barLight.Color = outerConeColor;
+            _barLight.CoordinateSpace = mainContainer;
+            _barLight.Intensity = 0.5f;
+
+            _barLight.Offset = new System.Numerics.Vector3(0, 0, 120);  
+
+            // Target bars with softer point light
+            for (int i = 0; i < _barValueMap.Count; i++)
+            {
+                Bar bar = (Bar)_barValueMap[i];
+                _barLight.Targets.Add(bar.Root);
+            }
+        }
+
+        public void UpdateLight(System.Windows.Point relativePoint)
+        {
+            _barOutlineLight.Offset = new System.Numerics.Vector3((float)relativePoint.X, (float)relativePoint.Y, _barOutlineLight.Offset.Z);
+            _barLight.Offset = new System.Numerics.Vector3((float)relativePoint.X, (float)relativePoint.Y, _barLight.Offset.Z);
         }
 
         private float GetMaxBarValue(float[] data)

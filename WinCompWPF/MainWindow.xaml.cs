@@ -55,6 +55,8 @@ namespace WinCompWPF
             var currentDpi = VisualTreeHelper.GetDpi(CustomerGrid);
             currentDpiX = currentDpi.PixelsPerInchX;
             currentDpiY = currentDpi.PixelsPerInchY;
+
+            ControlHostElement.Width = ControlHostElement.Height = DetailsPane.ActualHeight;
             hostControl = new HwndHostControl(ControlHostElement.Width, ControlHostElement.Height, currentDpiX, currentDpiY);
 
             hostControl.DpiChanged += HostControl_DpiChanged;
@@ -94,8 +96,8 @@ namespace WinCompWPF
             {
                 BarGraph graph = new BarGraph(hostControl.Compositor, hostControl.hwndHost, graphTitle, xAxisTitle, yAxisTitle,
                     (float)ControlHostElement.Width, (float)ControlHostElement.Height, currentDpiX, currentDpiY, customer.Data,   //TODO update DPI variable
-                    true, BarGraph.GraphBarStyle.AmbientAnimatingPerBarLinearGradient,
-                    new List<Windows.UI.Color> { Windows.UI.Colors.DarkBlue, Windows.UI.Colors.BlueViolet, Windows.UI.Colors.LightSkyBlue, Windows.UI.Colors.White });
+                    true, BarGraph.GraphBarStyle.PerBarLinearGradient,
+                    new List<Windows.UI.Color> { Windows.UI.Color.FromArgb(255,246, 65, 108), Windows.UI.Color.FromArgb(255, 255, 246, 183)});
 
                 currentGraph = graph;
                 graphContainer.Children.InsertAtTop(graph.GraphRoot);
